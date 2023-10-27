@@ -32,6 +32,13 @@ int	Server::create() {
 		return EXIT_FAILURE;
 	}
 
+	int yes = 1;
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+	{
+		std::cerr << "Error: Set Socket option failed\n" << std::flush;
+		return -1;
+	}
+
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
