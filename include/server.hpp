@@ -20,6 +20,7 @@ class Server {
 		int epollFd;
 		struct epoll_event event;
 		struct epoll_event events[MAX_EVENTS];
+
 	public:
 		Server();
 		~Server();
