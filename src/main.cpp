@@ -1,12 +1,6 @@
 #include "../include/server.hpp"
 
-int	run(){
-	Server server;
-	
-	if (server.create() != 0)
-		return EXIT_FAILURE;
-	return server.start();
-}
+int run(void);
 
 int main(int argc, char** argv) {
 	if (argc != 2 && argv[0] != NULL) {

@@ -1,5 +1,5 @@
-#ifndef SERVER_HPP
-# define SERVER_HPP
+#ifndef EPOLL_HANDLER_HPP
+# define EPOLL_HANDLER_HPP
 
 #include <cstdlib>
 #include <iostream>
@@ -10,18 +10,19 @@
 #include <unistd.h>
 #include <strings.h>
 #include <csignal>
+#include <string.h>
 
-class Server {
+#define MAX_EVENTS 5
+
+class EpollHandler {
 	private:
-		int sock;
-		int port;
 
 	public:
-		Server();
-		~Server();
-		int getSock();
+        int epollFd;
+		struct epoll_event *events;
 
-		int	create();
+		EpollHandler();
+		~EpollHandler();
 };
 
 #endif
