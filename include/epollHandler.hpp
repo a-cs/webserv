@@ -23,6 +23,8 @@ class EpollHandler {
 
 		EpollHandler();
 		~EpollHandler();
+		EpollHandler(EpollHandler const &obj);
+		EpollHandler &operator=(EpollHandler const &obj);
 };
 
 #endif
