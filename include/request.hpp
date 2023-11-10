@@ -14,11 +14,14 @@ class Request {
 	std::string	uri;
 	std::string	httpVersion;
 	std::string	body;
+	int			errorCode;
 
 	public:
 		Request();
 		~Request();
 		void	parse(std::string const requestData);
+		int 	getErrorCode();
+
 };
 
 #endif

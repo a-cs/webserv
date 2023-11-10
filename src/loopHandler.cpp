@@ -1,6 +1,7 @@
 #include "../include/server.hpp"
 #include "../include/epollHandler.hpp"
 #include "../include/request.hpp"
+#include <sstream>
 
 bool isRunning(bool status) {
 	static bool running = true;
@@ -53,9 +54,13 @@ int	start(Server server, EpollHandler *epollHandler) {
 				req.parse(requestData);
 
 				if (requestData.size() != 0) {
-					char response[] = "HTTP/1.1 200\nContent-Type: text/html\n\nHello World";
-
-					write(epollHandler->events[i].data.fd, &response, sizeof(response)-1);
+					std::stringstream response;
+					if(req.getErrorCode() != 0)
+						response << "HTTP/1.1 505\nContent-Type: text/html\n\nError";
+					else
+						response << "HTTP/1.1 200\nContent-Type: text/html\n\nHello World";
+					std::string responseMessage = response.str();
+					write(epollHandler->events[i].data.fd, responseMessage.c_str(), responseMessage.size());
 					close(epollHandler->events[i].data.fd);
 				}
 			}
