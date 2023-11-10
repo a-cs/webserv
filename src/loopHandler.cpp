@@ -1,5 +1,6 @@
 #include "../include/server.hpp"
 #include "../include/epollHandler.hpp"
+#include "../include/request.hpp"
 
 bool isRunning(bool status) {
 	static bool running = true;
@@ -46,16 +47,12 @@ int	start(Server server, EpollHandler *epollHandler) {
 					epoll_ctl(epollHandler->epollFd, EPOLL_CTL_ADD, clientSocket, &event);
 				}
 			} else {
-				std::cout << "Handle data from clients\n";
-				char buffer[1024];
-				bzero(buffer, sizeof(char)*1024);
-				ssize_t bytesRead = read(epollHandler->events[i].data.fd, buffer, sizeof(buffer));
+				std::string requestData = server.getRequestData(epollHandler->events[i].data.fd);
+				std::cout << "\nREQ:\n" << requestData << "|||\n";
+				Request req;
+				req.parse(requestData);
 
-				std::cout << "bytesRead = " << bytesRead << "\n";
-				std::cout << "buffer = \n----\n" << buffer << "\n----\n\n";
-				if (bytesRead <= 0) {
-					close(epollHandler->events[i].data.fd);
-				} else {
+				if (requestData.size() != 0) {
 					char response[] = "HTTP/1.1 200\nContent-Type: text/html\n\nHello World";
 
 					write(epollHandler->events[i].data.fd, &response, sizeof(response)-1);

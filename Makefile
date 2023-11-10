@@ -5,9 +5,11 @@ VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes 
 
 SRC_DIR := ./src
 SRC := main.cpp \
+		utils.cpp \
 		server.cpp \
 		epollHandler.cpp \
 		loopHandler.cpp \
+		request.cpp
 
 OBJ_DIR := ./objs
 OBJS := $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))

@@ -19,9 +19,9 @@ class Server {
 	public:
 		Server();
 		~Server();
-		int getSock();
-
-		int	create();
+		int			getSock();
+		int			create();
+		std::string	getRequestData(int fd);
 };
 
 #endif

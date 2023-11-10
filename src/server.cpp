@@ -44,3 +44,16 @@ int	Server::create() {
 
 	return EXIT_SUCCESS;
 }
+
+
+std::string	Server::getRequestData(int fd) {
+	std::cout << "Getting request data\n";
+	char buffer[1024];
+	bzero(buffer, sizeof(char)*1024);
+	ssize_t bytesRead = read(fd, buffer, sizeof(buffer) - 1);
+	if (bytesRead <= 0){
+		close(fd);
+		return "";
+	}
+	return std::string(buffer);
+}
