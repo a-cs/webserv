@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <strings.h>
 #include <csignal>
+#include "request.hpp"
+#include "response.hpp"
 
 class Server {
 	private:
@@ -22,6 +24,7 @@ class Server {
 		int			getSock();
 		int			create();
 		std::string	getRequestData(int fd);
+		void		handleRequest(Request *request, Response *response);
 };
 
 #endif

@@ -9,7 +9,8 @@ SRC := main.cpp \
 		server.cpp \
 		epollHandler.cpp \
 		loopHandler.cpp \
-		request.cpp
+		request.cpp \
+		response.cpp
 
 OBJ_DIR := ./objs
 OBJS := $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))

@@ -54,13 +54,19 @@ int	start(Server server, EpollHandler *epollHandler) {
 				req.parse(requestData);
 
 				if (requestData.size() != 0) {
-					std::stringstream response;
-					if(req.getErrorCode() != 0)
-						response << "HTTP/1.1 505\nContent-Type: text/html\n\nError";
-					else
-						response << "HTTP/1.1 200\nContent-Type: text/html\n\nHello World";
-					std::string responseMessage = response.str();
-					write(epollHandler->events[i].data.fd, responseMessage.c_str(), responseMessage.size());
+					Response res;
+		
+					server.handleRequest(&req, &res);
+					std::string message = res.getMessage();
+
+
+					// std::stringstream response;
+					// if(req.getErrorCode() != 0)
+					// 	response << "HTTP/1.1 505\nContent-Type: text/html\n\nError";
+					// else
+					// 	response << "HTTP/1.1 200\nContent-Type: text/html\n\nHello World";
+					// std::string responseMessage = response.str();
+					write(epollHandler->events[i].data.fd, message.c_str(), message.size());
 					close(epollHandler->events[i].data.fd);
 				}
 			}

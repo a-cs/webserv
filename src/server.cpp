@@ -57,3 +57,10 @@ std::string	Server::getRequestData(int fd) {
 	}
 	return std::string(buffer);
 }
+
+void	Server::handleRequest(Request *request, Response *response){
+	if(request->getErrorCode() != 0){
+		response->setStatusCode(request->getErrorCode());
+	}
+
+}
