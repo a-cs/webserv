@@ -6,8 +6,41 @@ Response::Response(): httpVersion("HTTP/1.1"), statusCode(200){
 Response::~Response(){
 }
 
+void Response::setBody(std::string content){
+	body = content;
+}
+
+void	Response::renderErrorPage(){
+	std::stringstream	ss;
+
+	ss << "<html>";
+	ss << "<head>";
+	ss << "<title>Document</title>";
+	ss << "</head>";
+	ss << "<style>";
+	ss << "html{font-size: 16px;}";
+	ss << "body{line-height: 1;height: 100vh;display: flex;flex-direction: column;justify-content: center;align-items: center;color:#E71D36;background-color: #0d1821;}";
+	ss << ".box{width: 600px;height: 600px;display: flex;flex-direction: column;justify-content: center;align-items: center;background-color: #fdfffc;border-radius: 16px;}";
+	ss << "h1{margin: 0;margin-bottom: 2rem;font-size: 7rem;}";
+	ss << "h2{margin: 0;font-size: 3.5rem;text-decoration: underline;}";
+	ss << "</style>";
+	ss << "<body>";
+	ss << "<div class='box'>";
+	ss << "<h1>"<< statusCode <<"</h1>";
+	ss << "<h2>" << getReasonPhrase() << "</h2>";
+	ss << "</div>";
+	ss << "</body>";
+	ss << "</html>";
+
+	setBody(ss.str());
+}
+
 void	Response::setStatusCode(int newStatusCode){
 	statusCode = newStatusCode;
+
+	if(statusCode >= 400){
+		renderErrorPage();
+	}
 }
 
 int	Response::getStatusCode(){

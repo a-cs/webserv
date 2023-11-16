@@ -14,6 +14,8 @@ class Response {
 	std::string	httpVersion;
 	std::string	body;
 
+	void	renderErrorPage();
+
 	public:
 		Response();
 		~Response();
@@ -22,6 +24,7 @@ class Response {
 		int			getStatusCode();
 		std::string	getReasonPhrase();
 		std::string	getMessage();
+		void		setBody(std::string content);
 
 };
 
