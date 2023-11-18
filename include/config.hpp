@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "location.hpp"
+#include "error.hpp"
 
 class Config {
     private:
@@ -17,7 +18,7 @@ class Config {
         std::vector<std::string> serverNamesList;
         long double bodySizeLimit;
         std::vector<Location> locationList;
-        std::string error;
+        Error error;
 };
 
 #endif
