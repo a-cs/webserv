@@ -11,6 +11,8 @@
 #include <cstring>
 #include "utils.hpp"
 #include <list>
+#include <cstdlib>
+#include <algorithm>
 
 class ParseConfig {
     private:
@@ -18,11 +20,9 @@ class ParseConfig {
 
         std::string readFile(std::string file);
         std::list<std::string> parseFile(std::string fileContent);
-        bool isServerLine(std::string line);
-        bool isLocationLine(std::string line);
-        bool isClosedBrackets(std::string line);
-        bool canRead(bool onServer, bool onLocation, std::string line);
         void getConfig(std::list<std::string> lines);
+        void addConfigProperties(std::string line, Config *config);
+        // void addLocationProperties(std::string line, Location *location);
 
     public:
         ParseConfig(std::string file);

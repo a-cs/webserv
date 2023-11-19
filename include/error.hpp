@@ -9,6 +9,7 @@ class Error {
     public:
         Error();
         ~Error();
+        void clear();
 
         std::string msg;
         bool onError;

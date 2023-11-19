@@ -12,12 +12,14 @@ class Config {
     public:
         Config();
         ~Config();
+        void clear();
 
         int port;
         std::string root;
         std::vector<std::string> serverNamesList;
         long double bodySizeLimit;
         std::vector<Location> locationList;
+        std::vector<std::string> errorPageList;
         Error error;
 };
 

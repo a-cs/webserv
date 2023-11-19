@@ -12,6 +12,14 @@ ParseConfig::ParseConfig(std::string file) {
     //     std::cout << *i << std::endl;
     // }
     getConfig(lines);
+    for (size_t i = 0; i < this->configList.size(); i++) {
+        std::cout << configList[i].port << std::endl;
+        std::cout << configList[i].root << std::endl;
+        for (size_t j = 0; j < this->configList[i].serverNamesList.size(); j++) {
+            std::cout << configList[i].serverNamesList[j] << std::endl;
+        }
+        std::cout << configList[i].bodySizeLimit << std::endl;
+    }
     this->error.onError = true;
 }
 
@@ -52,38 +60,9 @@ std::list<std::string> ParseConfig::parseFile(std::string fileContent) {
     return lines;
 }
 
-bool ParseConfig::isServerLine(std::string line) {
-    line = utils::trim(line);
-    return (line.compare("server {") == 0);
-}
-
-bool ParseConfig::isClosedBrackets(std::string line) {
-    line = utils::trim(line);
-    return (line.compare("}") == 0);
-}
-
-bool ParseConfig::isLocationLine(std::string line) {
-    std::vector<std::string> locationsTokens;
-    line = utils::trim(line);
-    locationsTokens = utils::split(line, " ");
-    if (locationsTokens.size() == 3 
-        && locationsTokens[0].compare("location") == 0
-        && locationsTokens[2].compare("{") == 0) {
-        return true;
-    }
-    return false;
-}
-
-bool ParseConfig::canRead(bool onServer, bool onLocation, std::string line) {
-    if (isServerLine(line) && onServer)
-        return false;
-    if (isLocationLine(line) && onLocation)
-        return false;
-    return true;
-}
-
 void ParseConfig::getConfig(std::list<std::string> lines) {
     bool onServer = false;
+    Config config;
 
     while (!this->error.onError && !lines.empty()) {
         if (utils::startsWith(lines.front(), "#")) {
@@ -108,7 +87,8 @@ void ParseConfig::getConfig(std::list<std::string> lines) {
         std::string line = lines.front();
         lines.pop_front();
         if (onServer && utils::startsWith(line, "location")) {
-            std::cout << "location first line: " << line << std::endl;
+            Location loc;
+            // std::cout << "location first line: " << line << std::endl;
             if (lines.front() != "{") {
                 this->error.onError = true;
                 break;
@@ -129,9 +109,10 @@ void ParseConfig::getConfig(std::list<std::string> lines) {
                     this->error.onError = true;
                     break;
                 }
-                std::cout << "location: " << lines.front() << std::endl;
+                // std::cout << "location: " << lines.front() << std::endl;
                 lines.pop_front();
             }
+            config.locationList.push_back(loc);
             continue;
         }
         if (line == "{") {
@@ -140,45 +121,68 @@ void ParseConfig::getConfig(std::list<std::string> lines) {
         }
         if (onServer && line == "}") {
             onServer = false;
-            std::cout << "server end: " << line << std::endl;
+            this->configList.push_back(config); //todo: checar se funciona sem copia
+            config.clear();
             continue;
         }
-        std::cout << line << std::endl;
+        addConfigProperties(line, &config);
+        // std::cout << line << std::endl;
     }
     if (onServer)
         this->error.onError = true;
-    if (this->error.onError) {
-        this->error.msg = " invalid sintax on config file";
+    // if (this->error.onError) {
+    //     this->error.msg = " invalid sintax on config file";
+    // }
+}
+
+void ParseConfig::addConfigProperties(std::string line, Config *config) {
+    std::vector<std::string> tokens;
+
+    tokens = utils::split(line, " ");
+    if (tokens.size() == 1) {
+        this->error.onError = true;
+        this->error.msg = " split falhou";
+        return;
+    }
+    if (tokens[0] == "listen" && tokens.size() == 2) { //todo: verificar se aceita varias portas
+        int port = std::atoi(tokens[1].c_str());
+        if (port < 1024 || port > 49151) {
+           this->error.onError = true;
+           this->error.msg = " range port falhou";
+            return; 
+        }
+        config->port = port;
+    } else if (tokens[0] == "listen" && tokens.size() != 2) {
+        this->error.onError = true;
+        this->error.msg = " listen falhou";
+        return;
+    } else if (tokens[0] == "root" && tokens.size() == 2) {
+        config->root = tokens[1];
+    } else if (tokens[0] == "root" && tokens.size() != 2) {
+        this->error.onError = true;
+        this->error.msg = " root falhou";
+        return;
+    } else if (tokens[0] == "server_name" && tokens.size() >= 2) {
+        for (size_t i = 1; i < tokens.size(); i++) {
+            if (std::find(config->serverNamesList.begin(), config->serverNamesList.end(), tokens[i]) == config->serverNamesList.end())
+                config->serverNamesList.push_back(tokens[i]);
+        }
+    } else if (tokens[0] == "server_name" && tokens.size() < 2) {
+        this->error.onError = true;
+        this->error.msg = " server_name falhou";
+        return;
+    } else if (tokens[0] == "client_max_body_size" && tokens.size() == 2) {
+        config->bodySizeLimit = std::atoi(tokens[1].c_str()); //todo: alterar atoi
+    } else if (tokens[0] == "client_max_body_size" && tokens.size() != 2) {
+        this->error.onError = true;
+        this->error.msg = " client_max_body_size falhou";
+        return;
+    } else {
+        this->error.onError = true;
+        this->error.msg = " token invalido";
     }
 }
 
-// std::cout << "1 while: " << line << std::endl;
-        // if (isServerLine(line)) {
-        //     onServer = true;
-        //     getline(ss, line);
-        //     std::cout << "is server line: " << line << std::endl;
-        //     while (!isClosedBrackets(line)) {
-        //         if (isLocationLine(line)) {
-        //             onLocation = true;
-        //             std::cout << line << std::endl;
-        //             getline(ss, line);
-        //             std::cout << "is location line: " << line << std::endl;
-        //             while (!isClosedBrackets(line)) {
-        //                 std::cout << "location: " << line << std::endl;
-        //                 getline(ss, line);
-        //                 if (ss.eof())
-        //                     break;
-        //             }
-        //             if (ss.eof())
-        //                 break;
-        //             onLocation = false;
-        //         }
-        //         if (ss.eof())
-        //             break;
-        //         std::cout << line << std::endl;
-        //         getline(ss, line);
-        //     }
-        //     if (ss.eof())
-        //         break;
-        //     onServer = false;
-        // }
+// void ParseConfig::addLocationProperties(std::string line, Location *loc) {
+
+// }
