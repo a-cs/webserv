@@ -12,7 +12,7 @@ class Location {
         ~Location();
 
         std::string path;
-        int allowedMethods;
+        std::vector<std::string> allowedMethods;
         std::vector<std::string> indexList;
         std::string cgi;
         bool isDirectoryEnable;

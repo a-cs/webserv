@@ -12,26 +12,27 @@ ParseConfig::ParseConfig(std::string file) {
     //     std::cout << *i << std::endl;
     // }
     getConfig(lines);
-    for (size_t i = 0; i < this->configList.size(); i++) {
-        std::cout << configList[i].port << std::endl;
-        std::cout << configList[i].root << std::endl;
-        for (size_t j = 0; j < this->configList[i].serverNamesList.size(); j++) {
-            std::cout << configList[i].serverNamesList[j] << std::endl;
-        }
-        std::cout << configList[i].bodySizeLimit << std::endl;
-        for (size_t l = 0; l < configList[i].locationList.size(); l++) {
-            std::cout << configList[i].locationList[l].path << std::endl;
-            std::cout << configList[i].locationList[l].allowedMethods << std::endl;
-            for (size_t m = 0; m < configList[i].locationList[l].indexList.size(); m++)
-                std::cout << configList[i].locationList[l].indexList[m] << std::endl;
-            std::cout << configList[i].locationList[l].cgi << std::endl;
-            if (configList[i].locationList[l].isDirectoryEnable)
-                std::cout << "true" << std::endl;
-            else
-                std::cout << "false" << std::endl;
-            std::cout << configList[i].locationList[l].redirect << std::endl;
-        }
-    }
+    // for (size_t i = 0; i < this->configList.size(); i++) {
+    //     std::cout << configList[i].port << std::endl;
+    //     std::cout << configList[i].root << std::endl;
+    //     for (size_t j = 0; j < this->configList[i].serverNamesList.size(); j++) {
+    //         std::cout << configList[i].serverNamesList[j] << std::endl;
+    //     }
+    //     std::cout << configList[i].bodySizeLimit << std::endl;
+    //     for (size_t l = 0; l < configList[i].locationList.size(); l++) {
+    //         std::cout << configList[i].locationList[l].path << std::endl;
+    //         for (size_t m = 0; m < configList[i].locationList[l].allowedMethods.size(); m++)
+    //             std::cout << configList[i].locationList[l].allowedMethods[m] << std::endl;
+    //         for (size_t m = 0; m < configList[i].locationList[l].indexList.size(); m++)
+    //             std::cout << configList[i].locationList[l].indexList[m] << std::endl;
+    //         std::cout << configList[i].locationList[l].cgi << std::endl;
+    //         if (configList[i].locationList[l].isDirectoryEnable)
+    //             std::cout << "true" << std::endl;
+    //         else
+    //             std::cout << "false" << std::endl;
+    //         std::cout << configList[i].locationList[l].redirect << std::endl;
+    //     }
+    // }
     this->error.onError = true;
 }
 
@@ -126,6 +127,11 @@ void ParseConfig::getConfig(std::list<std::string> lines) {
                 // std::cout << "location: " << lines.front() << std::endl;
                 lines.pop_front();
             }
+            if (loc.allowedMethods.size() == 0) {
+                loc.allowedMethods.push_back("GET");
+                loc.allowedMethods.push_back("POST");
+                loc.allowedMethods.push_back("DELETE");
+            }
             config.locationList.push_back(loc);
             continue;
         }
@@ -135,7 +141,7 @@ void ParseConfig::getConfig(std::list<std::string> lines) {
         }
         if (onServer && line == "}") {
             onServer = false;
-            this->configList.push_back(config); //todo: checar se funciona sem copia
+            this->configList.push_back(config);
             config.clear();
             continue;
         }
@@ -210,13 +216,20 @@ void ParseConfig::addLocationProperties(std::string line, Location *loc) {
         loc->path = tokens[1];
     } else if (tokens[0] == "location" && tokens.size() != 2) {
         this->error.onError = true;
-        this->error.msg = " location first line falhou";
+        // this->error.msg = " location first line falhou";
         return;
-    } else if (tokens[0] == "http_methods" && tokens.size() == 2) {
-        loc->allowedMethods = std::atoi(tokens[1].c_str());
+    } else if (tokens[0] == "http_methods" && tokens.size() >= 2) {
+        for (size_t i = 1; i < tokens.size(); i++) {
+            if (tokens[i] != "GET" && tokens[i] != "POST" && tokens[i] != "DELETE") {
+                this->error.onError = true;
+                // this->error.msg = " http_methods get method falhou";
+                return;
+            }
+            loc->allowedMethods.push_back(tokens[i]);
+        }
     } else if (tokens[0] == "http_methods" && tokens.size() != 2) {
         this->error.onError = true;
-        this->error.msg = " http_methods falhou";
+        // this->error.msg = " http_methods falhou";
         return;
     } else if (tokens[0] == "index" && tokens.size() >= 2) {
         for (size_t i = 1; i < tokens.size(); i++) {
@@ -225,13 +238,13 @@ void ParseConfig::addLocationProperties(std::string line, Location *loc) {
         }
     } else if (tokens[0] == "index" && tokens.size() < 2) {
         this->error.onError = true;
-        this->error.msg = " index falhou";
+        // this->error.msg = " index falhou";
         return;
     } else if (tokens[0] == "cgi_pass" && tokens.size() == 2) {
         loc->cgi = tokens[1];
     } else if (tokens[0] == "cgi_pass" && tokens.size() != 2) {
         this->error.onError = true;
-        this->error.msg = " cgi_pass falhou";
+        // this->error.msg = " cgi_pass falhou";
         return;
     } else if (tokens[0] == "directory_listing" && tokens.size() == 2) {
         if (tokens[1] == "on")
@@ -240,17 +253,18 @@ void ParseConfig::addLocationProperties(std::string line, Location *loc) {
             loc->isDirectoryEnable = false;
         else {
             this->error.onError = true;
-            this->error.msg = " directory_listing parse falhou";
+            // this->error.msg = " directory_listing parse falhou";
+            return;
         }
     } else if (tokens[0] == "directory_listing" && tokens.size() != 2) {
         this->error.onError = true;
-        this->error.msg = " directory_listing falhou";
+        // this->error.msg = " directory_listing falhou";
         return;
     } else if (tokens[0] == "redirect" && tokens.size() == 2) {
         loc->redirect = tokens[1];
     } else if (tokens[0] == "redirect" && tokens.size() != 2) {
         this->error.onError = true;
-        this->error.msg = " redirect falhou";
+        // this->error.msg = " redirect falhou";
         return;
     }
 }
