@@ -19,6 +19,18 @@ ParseConfig::ParseConfig(std::string file) {
             std::cout << configList[i].serverNamesList[j] << std::endl;
         }
         std::cout << configList[i].bodySizeLimit << std::endl;
+        for (size_t l = 0; l < configList[i].locationList.size(); l++) {
+            std::cout << configList[i].locationList[l].path << std::endl;
+            std::cout << configList[i].locationList[l].allowedMethods << std::endl;
+            for (size_t m = 0; m < configList[i].locationList[l].indexList.size(); m++)
+                std::cout << configList[i].locationList[l].indexList[m] << std::endl;
+            std::cout << configList[i].locationList[l].cgi << std::endl;
+            if (configList[i].locationList[l].isDirectoryEnable)
+                std::cout << "true" << std::endl;
+            else
+                std::cout << "false" << std::endl;
+            std::cout << configList[i].locationList[l].redirect << std::endl;
+        }
     }
     this->error.onError = true;
 }
@@ -89,6 +101,7 @@ void ParseConfig::getConfig(std::list<std::string> lines) {
         if (onServer && utils::startsWith(line, "location")) {
             Location loc;
             // std::cout << "location first line: " << line << std::endl;
+            addLocationProperties(line, &loc);
             if (lines.front() != "{") {
                 this->error.onError = true;
                 break;
@@ -109,6 +122,7 @@ void ParseConfig::getConfig(std::list<std::string> lines) {
                     this->error.onError = true;
                     break;
                 }
+                addLocationProperties(lines.front(), &loc);
                 // std::cout << "location: " << lines.front() << std::endl;
                 lines.pop_front();
             }
@@ -130,9 +144,9 @@ void ParseConfig::getConfig(std::list<std::string> lines) {
     }
     if (onServer)
         this->error.onError = true;
-    // if (this->error.onError) {
-    //     this->error.msg = " invalid sintax on config file";
-    // }
+    if (this->error.onError) {
+        this->error.msg = " invalid sintax on config file";
+    }
 }
 
 void ParseConfig::addConfigProperties(std::string line, Config *config) {
@@ -141,26 +155,26 @@ void ParseConfig::addConfigProperties(std::string line, Config *config) {
     tokens = utils::split(line, " ");
     if (tokens.size() == 1) {
         this->error.onError = true;
-        this->error.msg = " split falhou";
+        // this->error.msg = " split falhou";
         return;
     }
     if (tokens[0] == "listen" && tokens.size() == 2) { //todo: verificar se aceita varias portas
         int port = std::atoi(tokens[1].c_str());
         if (port < 1024 || port > 49151) {
            this->error.onError = true;
-           this->error.msg = " range port falhou";
+        //    this->error.msg = " range port falhou";
             return; 
         }
         config->port = port;
     } else if (tokens[0] == "listen" && tokens.size() != 2) {
         this->error.onError = true;
-        this->error.msg = " listen falhou";
+        // this->error.msg = " listen falhou";
         return;
     } else if (tokens[0] == "root" && tokens.size() == 2) {
         config->root = tokens[1];
     } else if (tokens[0] == "root" && tokens.size() != 2) {
         this->error.onError = true;
-        this->error.msg = " root falhou";
+        // this->error.msg = " root falhou";
         return;
     } else if (tokens[0] == "server_name" && tokens.size() >= 2) {
         for (size_t i = 1; i < tokens.size(); i++) {
@@ -169,20 +183,74 @@ void ParseConfig::addConfigProperties(std::string line, Config *config) {
         }
     } else if (tokens[0] == "server_name" && tokens.size() < 2) {
         this->error.onError = true;
-        this->error.msg = " server_name falhou";
+        // this->error.msg = " server_name falhou";
         return;
     } else if (tokens[0] == "client_max_body_size" && tokens.size() == 2) {
         config->bodySizeLimit = std::atoi(tokens[1].c_str()); //todo: alterar atoi
     } else if (tokens[0] == "client_max_body_size" && tokens.size() != 2) {
         this->error.onError = true;
-        this->error.msg = " client_max_body_size falhou";
+        // this->error.msg = " client_max_body_size falhou";
         return;
     } else {
         this->error.onError = true;
-        this->error.msg = " token invalido";
+        // this->error.msg = " token invalido";
     }
 }
 
-// void ParseConfig::addLocationProperties(std::string line, Location *loc) {
+void ParseConfig::addLocationProperties(std::string line, Location *loc) {
+    std::vector<std::string> tokens;
 
-// }
+    tokens = utils::split(line, " ");
+    if (tokens.size() == 1) {
+        this->error.onError = true;
+        this->error.msg = " split falhou";
+        return;
+    }
+    if (tokens[0] == "location" && tokens.size() == 2) {
+        loc->path = tokens[1];
+    } else if (tokens[0] == "location" && tokens.size() != 2) {
+        this->error.onError = true;
+        this->error.msg = " location first line falhou";
+        return;
+    } else if (tokens[0] == "http_methods" && tokens.size() == 2) {
+        loc->allowedMethods = std::atoi(tokens[1].c_str());
+    } else if (tokens[0] == "http_methods" && tokens.size() != 2) {
+        this->error.onError = true;
+        this->error.msg = " http_methods falhou";
+        return;
+    } else if (tokens[0] == "index" && tokens.size() >= 2) {
+        for (size_t i = 1; i < tokens.size(); i++) {
+            if (std::find(loc->indexList.begin(), loc->indexList.end(), tokens[i]) == loc->indexList.end())
+                loc->indexList.push_back(tokens[i]);
+        }
+    } else if (tokens[0] == "index" && tokens.size() < 2) {
+        this->error.onError = true;
+        this->error.msg = " index falhou";
+        return;
+    } else if (tokens[0] == "cgi_pass" && tokens.size() == 2) {
+        loc->cgi = tokens[1];
+    } else if (tokens[0] == "cgi_pass" && tokens.size() != 2) {
+        this->error.onError = true;
+        this->error.msg = " cgi_pass falhou";
+        return;
+    } else if (tokens[0] == "directory_listing" && tokens.size() == 2) {
+        if (tokens[1] == "on")
+            loc->isDirectoryEnable = true;
+        else if (tokens[1] == "off")
+            loc->isDirectoryEnable = false;
+        else {
+            this->error.onError = true;
+            this->error.msg = " directory_listing parse falhou";
+        }
+    } else if (tokens[0] == "directory_listing" && tokens.size() != 2) {
+        this->error.onError = true;
+        this->error.msg = " directory_listing falhou";
+        return;
+    } else if (tokens[0] == "redirect" && tokens.size() == 2) {
+        loc->redirect = tokens[1];
+    } else if (tokens[0] == "redirect" && tokens.size() != 2) {
+        this->error.onError = true;
+        this->error.msg = " redirect falhou";
+        return;
+    }
+}

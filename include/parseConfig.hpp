@@ -22,7 +22,7 @@ class ParseConfig {
         std::list<std::string> parseFile(std::string fileContent);
         void getConfig(std::list<std::string> lines);
         void addConfigProperties(std::string line, Config *config);
-        // void addLocationProperties(std::string line, Location *location);
+        void addLocationProperties(std::string line, Location *location);
 
     public:
         ParseConfig(std::string file);
