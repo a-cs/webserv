@@ -43,7 +43,7 @@ std::string ParseConfig::readFile(std::string file) {
     if (!this->fd.is_open()) {
         this->error.msg = "cannot open file";
         this->error.onError = true;
-        return NULL;
+        return "";
     }
     std::stringstream buf;
     buf << fd.rdbuf();

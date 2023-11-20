@@ -1,7 +1,7 @@
 NAME = webserv
 CC = c++
 FLAGS = -Wall -Wextra -Werror -std=c++98
-VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --tool=memcheck -q ./$(NAME) a
+VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --tool=memcheck -q ./$(NAME)
 
 SRC_DIR := ./src
 SRC := config.cpp \
