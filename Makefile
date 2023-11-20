@@ -1,16 +1,20 @@
 NAME = webserv
 CC = c++
 FLAGS = -Wall -Wextra -Werror -std=c++98
-VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --tool=memcheck -q ./$(NAME) a
+VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --tool=memcheck -q ./$(NAME)
 
 SRC_DIR := ./src
-SRC := main.cpp \
-		utils.cpp \
-		server.cpp \
+SRC := config.cpp \
 		epollHandler.cpp \
+		error.cpp \
+		location.cpp \
 		loopHandler.cpp \
+		main.cpp \
+		parseConfig.cpp \
 		request.cpp \
-		response.cpp
+		response.cpp \
+		server.cpp \
+		utils.cpp
 
 OBJ_DIR := ./objs
 OBJS := $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
