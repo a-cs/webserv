@@ -87,7 +87,7 @@ void	Request::parse(std::string const requestData){
 	if(!isRequestLineParsed)
 		return;
 	buffer = requestData.substr(pos + 2);
-	std::cout << "\n\nBUFFER|" << buffer << "|\n\n";
+	// std::cout << "\n\nBUFFER|" << buffer << "|\n\n";
 	pos = buffer.find(CRLF CRLF);
 	if(pos == std::string::npos){
 		errorCode = 400;

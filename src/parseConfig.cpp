@@ -33,7 +33,7 @@ ParseConfig::ParseConfig(std::string file) {
     //         std::cout << configList[i].locationList[l].redirect << std::endl;
     //     }
     // }
-    this->error.onError = true;
+    // this->error.onError = true;
 }
 
 ParseConfig::~ParseConfig() {}

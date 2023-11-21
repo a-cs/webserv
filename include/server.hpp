@@ -12,6 +12,7 @@
 #include <csignal>
 #include "request.hpp"
 #include "response.hpp"
+#include "config.hpp"
 
 class Server {
 	private:
@@ -19,6 +20,7 @@ class Server {
 		int port;
 
 	public:
+		Config	config;
 		Server();
 		~Server();
 		int			getSock();

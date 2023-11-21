@@ -12,7 +12,10 @@ int Server::getSock() {
 	return sock;
 }
 
+
+
 int	Server::create() {
+	port = config.port;
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (sock < 0) {
@@ -48,6 +51,7 @@ int	Server::create() {
 
 std::string	Server::getRequestData(int fd) {
 	std::cout << "Getting request data\n";
+	std::cout << "fd=" << fd << "\n";
 	char buffer[1024];
 	bzero(buffer, sizeof(char)*1024);
 	ssize_t bytesRead = read(fd, buffer, sizeof(buffer) - 1);
@@ -59,6 +63,7 @@ std::string	Server::getRequestData(int fd) {
 }
 
 void	Server::handleRequest(Request *request, Response *response){
+	std::cout << "hr errorcode=" << request->getErrorCode() << "\n";
 	if(request->getErrorCode() != 0){
 		response->setStatusCode(request->getErrorCode());
 	}
