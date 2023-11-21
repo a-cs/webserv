@@ -66,6 +66,12 @@ void	Server::handleRequest(Request *request, Response *response){
 	std::cout << "hr errorcode=" << request->getErrorCode() << "\n";
 	if(request->getErrorCode() != 0){
 		response->setStatusCode(request->getErrorCode());
+		return;
+	}
+
+	if(request->getErrorCode() != 0){
+		response->setStatusCode(request->getErrorCode());
+		return;
 	}
 
 }

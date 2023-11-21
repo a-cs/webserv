@@ -6,21 +6,23 @@
 #include "location.hpp"
 #include "error.hpp"
 
-class Config {
-    private:
+class Config
+{
+	private:
+	public:
+		Config();
+		~Config();
+		Config(Config const &obj);
+		Config &operator=(Config const &obj);
+		void clear();
 
-    public:
-        Config();
-        ~Config();
-        void clear();
-
-        int port;
-        std::string root;
-        std::vector<std::string> serverNamesList;
-        long double bodySizeLimit;
-        std::vector<Location> locationList;
-        std::vector<std::string> errorPageList;
-        Error error;
+		int port;
+		std::string root;
+		std::vector<std::string> serverNamesList;
+		long double bodySizeLimit;
+		std::vector<Location> locationList;
+		std::vector<std::string> errorPageList;
+		Error error;
 };
 
 #endif

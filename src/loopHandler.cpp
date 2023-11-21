@@ -97,7 +97,8 @@ int	start(EpollHandler *epollHandler) {
 				std::cout << "if req\n";
 				requestData = server->getRequestData(connection->fd);
 				std::cout << "\nREQ:\n" << requestData << "|||\n";
-				req.parse(requestData);
+				
+				req.parse(requestData, &server->config);
 
 				// connection_t *newConnection = new connection_t;
 				// newConnection->type ="response";
