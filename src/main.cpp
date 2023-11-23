@@ -1,7 +1,7 @@
 #include "../include/server.hpp"
 #include "../include/parseConfig.hpp"
 
-int run(void);
+int run(std::vector<Config>  configList);
 
 int main(int argc, char** argv) {
 	if (argc > 2) {
@@ -15,5 +15,5 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 	std::vector<Config> configList = parse.configList;
-	return run();
+	return run(configList);
 }
