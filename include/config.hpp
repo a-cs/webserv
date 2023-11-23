@@ -14,13 +14,13 @@ class Config {
         ~Config();
         void clear();
 
-        int port;
+        int port; //todo: transformar em lista
         std::string root;
         std::vector<std::string> serverNamesList;
         long double bodySizeLimit;
         std::vector<Location> locationList;
         std::vector<std::string> errorPageList;
-        Error error;
+        Error error; // todo: adicionar lista de erros
 };
 
 #endif

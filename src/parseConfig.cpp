@@ -164,7 +164,7 @@ void ParseConfig::addConfigProperties(std::string line, Config *config) {
         // this->error.msg = " split falhou";
         return;
     }
-    if (tokens[0] == "listen" && tokens.size() == 2) { //todo: verificar se aceita varias portas
+    if (tokens[0] == "listen" && tokens.size() == 2) { //todo: validar se a porta ja esta em uso
         int port = std::atoi(tokens[1].c_str());
         if (port < 1024 || port > 49151) {
            this->error.onError = true;

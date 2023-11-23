@@ -62,5 +62,5 @@ void	Server::handleRequest(Request *request, Response *response){
 	if(request->getErrorCode() != 0){
 		response->setStatusCode(request->getErrorCode());
 	}
-
+	//adicionar caso de file
 }
