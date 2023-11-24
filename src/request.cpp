@@ -1,6 +1,6 @@
 #include "request.hpp"
 
-Request::Request(): errorCode(0), isRequestLineParsed(false), isHeadersParsed(false){
+Request::Request(): errorCode(0), isRequestLineParsed(false), isHeadersParsed(false), isBodyParsed(false){
 }
 
 Request::~Request(){
@@ -109,30 +109,73 @@ void	Request::parseHeaders(std::string headersContent){
 
 }
 
+void	Request::parseBody(){
+
+	std::stringstream ss(header.at("content-length"));
+	long double contentLength;
+	ss >> contentLength;
+	
+	if(contentLength > 0){
+		std::cout << "\n\ncontent-lenght=" << contentLength <<"\n\n";
+		if(data.size() > config.bodySizeLimit)
+		{
+			errorCode = 413;
+			std::cerr << "Payload too large\n";
+			return;
+		}
+		if(data.size() < contentLength)
+			return;
+		body = data.substr(0, contentLength);
+		data.erase(0, contentLength);
+		isBodyParsed = true;
+		return;
+	}
+	isBodyParsed = true;
+}
+
+bool	Request::isParsed(){
+	if(errorCode != 0){
+		return true;
+	}
+	return isRequestLineParsed && isHeadersParsed && isBodyParsed;
+}
+
 void	Request::parse(std::string const requestData, Config *config){
-	std::string	buffer;
+	data += requestData;
 
 	size_t pos = requestData.find(CRLF);
 	this->config = *config;
-	if(pos == std::string::npos)
-		return;
-	std::string requestLine = requestData.substr(0, pos);
-	parseRequestLine(requestLine);
-	if(!isRequestLineParsed)
-		return;
-	buffer = requestData.substr(pos + 2);
-	// std::cout << "\n\nBUFFER|" << buffer << "|\n\n";
-	pos = buffer.find(CRLF CRLF);
-	if(pos == std::string::npos){
-		errorCode = 400;
-		std::cout << "Header Missing\n";
-		return;
+	if(!isRequestLineParsed){
+		if(pos == std::string::npos)
+			return;
+		std::string requestLine = requestData.substr(0, pos);
+		parseRequestLine(requestLine);
+		data = requestData.substr(pos + 2);
+		if(!isRequestLineParsed)
+			return;
 	}
-	std::string	headersContent = buffer.substr(0, pos);
-	parseHeaders(headersContent);
-	if(!isHeadersParsed)
-		return;
+	if(!isHeadersParsed){
+		pos = data.find(CRLF CRLF);
+		if(pos == std::string::npos){
+			errorCode = 400;
+			std::cout << "Header Missing\n";
+			return;
+		}
+		std::string	headersContent = data.substr(0, pos);
+		parseHeaders(headersContent);
+		data = data.substr(pos + 4);
+		if(!isHeadersParsed)
+			return;
+	}
+	// std::cout << "\n\nBUFFER|" << buffer << "||\n\n";
 
-	std::string	bodyContent = buffer.substr(pos + 4);
-	std::cout << "\n\nBody|" << bodyContent << "|\n\n";
+
+	std::cout << "\n\nBodySize|" << data.size() << "|\n";
+	if(!isBodyParsed){
+		std::string	bodyContent = data.substr(0, pos);
+		parseBody();
+		if(!isBodyParsed){
+			return;
+		}
+	}
 }
