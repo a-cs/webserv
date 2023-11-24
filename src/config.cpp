@@ -34,3 +34,22 @@ void Config::clear() {
     this->locationList.clear();
     this->error.clear();
 }
+
+bool Config::isValidCgiRequest(std::string requestPath) {
+    for(size_t i = 0; i < locationList.size(); i++) {
+        if (locationList[i].path == requestPath) {
+            if(locationList[i].cgiPass == locationList[i].cgi.substr(locationList[i].cgi.find_last_of(".") + 1))
+                return true;
+            return false;
+        }
+    }
+    return false;
+}
+
+std::string Config::getCgiFile(std::string requestPath) {
+    for(size_t i = 0; i < locationList.size(); i++) {
+        if (locationList[i].path == requestPath)
+            return locationList[i].cgi;
+    }
+    return "";
+}

@@ -15,6 +15,7 @@ class Location {
         std::vector<std::string> allowedMethods;
         std::vector<std::string> indexList;
         std::string cgi;
+        std::string cgiPass;
         bool isDirectoryEnable;
         std::string redirect;
         std::string uploadPath;
