@@ -45,8 +45,6 @@ int	start(EpollHandler *epollHandler) {
 	std::signal(SIGINT, stop);
 	std::signal(SIGQUIT, stop);
 
-	bool flag = false;
-
 	while (isRunning(true)) {
 		int numEvents = epoll_wait(epollHandler->epollFd, epollHandler->events, MAX_EVENTS, 0);
 
@@ -60,7 +58,6 @@ int	start(EpollHandler *epollHandler) {
 
 		for (int i = 0; i < numEvents; i++) {
 			std::string requestData;
-			Request req;
 			connection_t *connection = (connection_t *)(epollHandler->events[i].data.ptr);
 			// std::cout << "connection fd " << connection->fd << "\n";
 			// std::cout << "connection->type: " << connection->type<< "\n";
@@ -80,9 +77,11 @@ int	start(EpollHandler *epollHandler) {
 				} else {
 					setNonBlocking(clientSocket);
 					connection_t *newConnection = new connection_t;
+					Request req;
 					newConnection->type ="connected";
 					newConnection->ptr = server;
 					newConnection->fd = clientSocket;
+					newConnection->req = req;
 					std::cout << "newConnection fd " << newConnection->fd << "\n";
 					struct epoll_event event;
 					std::cout << clientSocket << "\n";
@@ -93,12 +92,26 @@ int	start(EpollHandler *epollHandler) {
 				std::cout << "end if new\n";
 				continue;
 			}
-			if(connection->type == "connected"){
+			if(epollHandler->events[i].events & EPOLLIN){
 				std::cout << "if req\n";
 				requestData = server->getRequestData(connection->fd);
 				std::cout << "\nREQ:\n" << requestData << "|||\n";
 				
-				req.parse(requestData, &server->config);
+				connection->req.parse(requestData, &server->config);
+
+				if(connection->req.isParsed()){
+					connection->type ="response";
+					// connection->req = req;
+
+					struct epoll_event event;
+					event.events = EPOLLOUT;
+					// event.data.fd = connection->fd;
+					event.data.ptr = connection;
+					std::cout << "connection fd " << connection->fd << "\n";
+					std::cout << "server :" << server->getSock() << "\n";
+					std::cout << "epollevent " << epollHandler->events[i].events << "\n";
+					epoll_ctl(epollHandler->epollFd, EPOLL_CTL_MOD, connection->fd, &event);
+				}
 
 				// connection_t *newConnection = new connection_t;
 				// newConnection->type ="response";
@@ -107,24 +120,15 @@ int	start(EpollHandler *epollHandler) {
 				// newConnection->ptr = server;
 				// newConnection->fd = connection->fd;
 
-				connection->type ="response";
-				connection->req = req;
-
-				struct epoll_event event;
-				event.events = EPOLLOUT;
-				// event.data.fd = connection->fd;
-				event.data.ptr = connection;
-				std::cout << "connection fd " << connection->fd << "\n";
-				std::cout << "server :" << server->getSock() << "\n";
-				std::cout << "epollevent " << epollHandler->events[i].events << "\n";
-				epoll_ctl(epollHandler->epollFd, EPOLL_CTL_MOD, connection->fd, &event);
 				std::cout << "end if req\n";
 				continue;
 			}
-			if(epollHandler->events[i].events & EPOLLOUT && !flag){
+			if(epollHandler->events[i].events & EPOLLOUT){
 				// flag= true;
 				std::cout << "if res\n";
 				Response res;
+
+				// std::cout << "\n\nFINAL REQ BODY=" << connection->req.body <<"|\n\n";
 	
 				server->handleRequest(&connection->req, &res);
 				std::string message = res.getMessage();
