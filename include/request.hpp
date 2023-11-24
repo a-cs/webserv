@@ -38,7 +38,7 @@ class Request {
 		std::string							httpVersion;
 		std::map<std::string, std::string>	header;
 		std::string							body;
-
+		void	setErrorCode(int code);
 };
 
 #endif

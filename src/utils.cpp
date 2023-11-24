@@ -44,3 +44,20 @@ bool utils::endsWith(const std::string &s, const std::string &c) {
 bool utils::startsWith(const std::string &s, const std::string &c) {
   return (s.substr(0, c.size()) == c);
 }
+
+bool  utils::isFile(const std::string &s) {
+  struct stat buf;
+  if(stat(s.c_str(), &buf) == -1)
+    return false;
+  return S_ISREG(buf.st_mode);
+}
+
+std::stringstream			utils::getFile(std::string path) {
+  std::ifstream     ifs;
+  std::stringstream buf;
+
+  ifs.open(path.c_str());
+  buf << ifs.rdbuf();
+  ifs.close();
+  return buf;
+}

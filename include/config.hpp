@@ -5,6 +5,7 @@
 #include <vector>
 #include "location.hpp"
 #include "error.hpp"
+#include <map>
 
 class Config
 {
@@ -16,13 +17,13 @@ class Config
 		Config &operator=(Config const &obj);
 		void clear();
 
-		int port;
-		std::string root;
-		std::vector<std::string> serverNamesList;
-		long double bodySizeLimit;
-		std::vector<Location> locationList;
-		std::vector<std::string> errorPageList;
-		Error error;
+        int port;
+        std::string root;
+        std::vector<std::string> serverNamesList;
+        long double bodySizeLimit;
+        std::vector<Location> locationList;
+        Error error;
+		std::map<int, std::string> errorPageList;
 };
 
 #endif

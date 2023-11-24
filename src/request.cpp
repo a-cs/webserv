@@ -10,6 +10,10 @@ int	Request::getErrorCode(){
 	return errorCode;
 }
 
+void	Request::setErrorCode(int code) {
+	this->errorCode = code;
+}
+
 bool	Request::validateMethod(std::string method){
 	for (size_t i = 0; i < config.locationList.size(); i++){
 		if(config.locationList[i].path == uri){

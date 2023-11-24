@@ -17,6 +17,7 @@ class Location {
         std::string cgi;
         bool isDirectoryEnable;
         std::string redirect;
+        std::string uploadPath;
 };
 
 #endif

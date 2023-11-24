@@ -164,7 +164,7 @@ void ParseConfig::addConfigProperties(std::string line, Config *config) {
         // this->error.msg = " split falhou";
         return;
     }
-    if (tokens[0] == "listen" && tokens.size() == 2) { //todo: verificar se aceita varias portas
+    if (tokens[0] == "listen" && tokens.size() == 2) {
         int port = std::atoi(tokens[1].c_str());
         if (port < 1024 || port > 49151) {
            this->error.onError = true;
@@ -192,15 +192,30 @@ void ParseConfig::addConfigProperties(std::string line, Config *config) {
         // this->error.msg = " server_name falhou";
         return;
     } else if (tokens[0] == "client_max_body_size" && tokens.size() == 2) {
-        config->bodySizeLimit = std::atoi(tokens[1].c_str()); //todo: alterar atoi
+        std::stringstream ss(tokens[1]);
+        ss >> config->bodySizeLimit;
     } else if (tokens[0] == "client_max_body_size" && tokens.size() != 2) {
         this->error.onError = true;
         // this->error.msg = " client_max_body_size falhou";
         return;
+    } else if (tokens[0] == "erro_page" && tokens.size() == 3) {
+        std::stringstream ss(tokens[1]);
+        int code;
+        ss >> code;
+        if (code < 400) {
+            this->error.onError = true;
+            // this->error.msg = " erro_page falhou";
+            return;
+        }
+        config->errorPageList[code] = tokens[2];
+    } else if (tokens[0] == "erro_page" && tokens.size() != 3) {
+        this->error.onError = true;
+        // this->error.msg = " erro_page falhou";
+        return;
     } else {
         this->error.onError = true;
         // this->error.msg = " token invalido";
-    }
+    } 
 }
 
 void ParseConfig::addLocationProperties(std::string line, Location *loc) {
@@ -265,6 +280,16 @@ void ParseConfig::addLocationProperties(std::string line, Location *loc) {
     } else if (tokens[0] == "redirect" && tokens.size() != 2) {
         this->error.onError = true;
         // this->error.msg = " redirect falhou";
+        return;
+    } else if (tokens[0] == "upload_path" && tokens.size() == 2) {
+        loc->uploadPath = tokens[1];
+    } else if (tokens[0] == "upload_path" && tokens.size() != 2) {
+        this->error.onError = true;
+        // this->error.msg = " upload_path falhou";
+        return;
+    } else {
+        this->error.onError = true;
+        // this->error.msg = " parse location falhou";
         return;
     }
 }
