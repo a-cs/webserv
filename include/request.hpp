@@ -15,8 +15,6 @@
 class Request {
 	private:
 	Config								config;
-	std::string							method;
-	std::string							uri;
 	std::string							httpVersion;
 	std::map<std::string, std::string>	header;
 	std::string							body;
@@ -34,7 +32,10 @@ class Request {
 		void	parseHeaders(std::string headersContent);
 		void	parse(std::string const requestData, Config *config);
 		int 	getErrorCode();
+		void	setErrorCode(int code);
 
+		std::string	uri;
+		std::string	method;
 };
 
 #endif
