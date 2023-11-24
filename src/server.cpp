@@ -78,7 +78,7 @@ void	Server::handleRequest(Request *request, Response *response){
 			}
 		}
 		else {
-			response->setBody(utils::getFile(this->config.root + request->uri).str());
+			response->setBody(utils::getFile(this->config.root + request->uri));
 			//todo: adicionar content type com a externsao do arquivo
 		}
 	}

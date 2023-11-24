@@ -52,12 +52,12 @@ bool  utils::isFile(const std::string &s) {
   return S_ISREG(buf.st_mode);
 }
 
-std::stringstream			utils::getFile(std::string path) {
+std::string	utils::getFile(std::string path) {
   std::ifstream     ifs;
   std::stringstream buf;
 
   ifs.open(path.c_str());
   buf << ifs.rdbuf();
   ifs.close();
-  return buf;
+  return buf.str();
 }
