@@ -70,6 +70,11 @@ void	Server::handleRequest(Request *request, Response *response){
 		return;
 	}
 
+	if(request->isMultiPart()){
+		std::cout << "\n\ncontent-type= Multipart|\n\n";
+		return;
+	}
+
 	if(utils::isFile(this->config.root + request->uri)) {
 		if (request->method == "DELETE") {
 			if (remove((this->config.root + request->uri).c_str()) != 0) {
