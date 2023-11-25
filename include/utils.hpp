@@ -18,6 +18,7 @@ namespace utils {
 	bool						isFile(const std::string &s);
 	bool						pathExists(std::string path);
 	std::string					getFile(std::string path);
+	std::string					formatSize(size_t size);
 }
 
 #endif

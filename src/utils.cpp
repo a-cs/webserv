@@ -73,3 +73,17 @@ std::string	utils::getFile(std::string path) {
   ifs.close();
   return buf.str();
 }
+
+std::string utils::formatSize(size_t size){
+	std::stringstream ss;
+
+	const char *units[] = {"B", "KB", "MB", "GB"};
+	int         unit = 0;
+	while (size > 1024 && unit < 3)
+	{
+		size /= 1024;
+		++unit;
+	}
+	ss << size << units[unit];
+	return ss.str();
+}
