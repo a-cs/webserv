@@ -63,10 +63,77 @@ std::string	Server::getRequestData(int fd) {
 	return std::string(buffer, bytesRead);
 }
 
+void	Server::handleMultipart(Request *request){
+	std::string	body = request->body;
+	std::string	contentType = request->header.at("content-type");
+	std::string	boundary = "--" + contentType.substr(contentType.find("boundary=") + 9);
+	std::string	uploadPath = "";
+	for (size_t i = 0; i < config.locationList.size(); i++){
+		if(config.locationList[i].path == request->uri){
+			uploadPath = config.root + config.locationList[i].uploadPath;
+		}
+	}
+
+	if(!utils::pathExists(uploadPath))
+		mkdir(uploadPath.c_str(), 0777);
+
+	size_t	pos = 0;
+	size_t	endPos;
+	std::cout << "\n\nEntrando while boundary:\n";
+	while ((pos = body.find(boundary, pos)) != std::string::npos)
+	{
+		std::cout << "\nboundarySize:" << boundary.size() << "\n";
+		pos += boundary.size();
+		if(body.substr(pos, 2) == "--")
+			break;
+		pos += 2;
+		endPos = body.find(boundary, pos);
+		if(endPos == std::string::npos)
+			endPos = body.size();
+		std::string	part = body.substr(pos, endPos - pos);
+		std::cout << "\npos:" << pos << "\n";
+		std::cout << "\nendPos:" << endPos << "\n";
+		std::cout << "\nfind:" << part.find("filename\"") <<"|\n";
+		std::cout << "\npart:|" << part << "|\n";
+		if(part.find("filename=\"") != std::string::npos){
+			size_t	fileNameStart = part.find("filename=\"") + 10;
+			size_t	fileNameEnd = part.find("\"", fileNameStart);
+			std::string	fileName = part.substr(fileNameStart, fileNameEnd - fileNameStart);
+			size_t	fileContentStart = part.find("\r\n\r\n") + 4;
+			size_t	fileContentEnd = part.rfind("\r\n");
+			std::string	fileContent = part.substr(fileContentStart, fileContentEnd - fileContentStart);
+			std::string	filePath = uploadPath + "/" + fileName;
+			std::ofstream file(filePath.c_str());
+			file << fileContent;
+			file.close();
+			pos = endPos;
+			std::cout << "\n\nCriou file:" << fileName << "|\n\n";
+			std::cout << "\nnovo pos:" << pos << "\n";
+		}
+		else {
+			pos = endPos;
+		}
+	}
+}
+
 void	Server::handleRequest(Request *request, Response *response){
-	std::cout << "hr errorcode=" << request->getErrorCode() << "\n";
+	std::cout << "req errorcode=" << request->getErrorCode() << "\n";
+
+	std::cout << "REQ body=" << request->body << "|\n";
 	if(request->getErrorCode() != 0){
 		response->setStatusCode(request->getErrorCode());
+		return;
+	}
+
+
+	if(request->isMultiPart()){
+		handleMultipart(request);
+		response->setStatusCode(201);
+		return;
+	}
+
+	if(!utils::pathExists(this->config.root + request->uri)){
+		response->setStatusCode(404);
 		return;
 	}
 
@@ -79,19 +146,19 @@ void	Server::handleRequest(Request *request, Response *response){
 			return;
 		}
 		response->setBody("");
+		return;
 	}
-
-	// lidando com file
+  
 	if(utils::isFile(this->config.root + request->uri)) {
 		if (request->method == "DELETE") {
 			if (remove((this->config.root + request->uri).c_str()) != 0) {
 				request->setErrorCode(400);
-				return;
 			}
 		}
 		else {
 			response->setBody(utils::getFile(this->config.root + request->uri));
 			//todo: adicionar content type com a externsao do arquivo
 		}
+		return;
 	}
 }

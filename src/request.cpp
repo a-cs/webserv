@@ -1,6 +1,7 @@
 #include "request.hpp"
 
 Request::Request(): errorCode(0), isRequestLineParsed(false), isHeadersParsed(false), isBodyParsed(false){
+	contentLength = 0;
 }
 
 Request::~Request(){
@@ -28,17 +29,6 @@ bool	Request::validateMethod(std::string method){
 	return true;
 }
 
-bool	Request::validateUri(std::string uri){
-	for (size_t i = 0; i < config.locationList.size(); i++){
-		if(config.locationList[i].path == uri){
-			return true;
-		}
-	}
-	errorCode = 404;
-	std::cerr << "Not Found\n";
-	return false;
-}
-
 void	Request::parseRequestLine(std::string requestLine){
 	std::vector<std::string> requestLineTokens = utils::split(requestLine, " "); 
 	if(requestLineTokens.size() != 3){
@@ -53,10 +43,6 @@ void	Request::parseRequestLine(std::string requestLine){
 		std::cout << "\nmethod=" << method <<"\n";
 		std::cout << "uri=" << uri <<"\n";
 		std::cout << "httpVersion=" << httpVersion <<"\n";
-
-		if(!validateUri(uri)){
-			return;
-		}
 
 		if(!validateMethod(method)){
 			return;
@@ -104,6 +90,10 @@ void	Request::parseHeaders(std::string headersContent){
 			std::cerr << "bad request, invalid Content-Length value on line=\n" << line << "\n";
 			break;
 		}
+		if(key == "content-length"){
+			std::stringstream	ss(value);
+			ss >> contentLength;
+		}
 		header[key] = value;
 
 		if(errorCode == 0){
@@ -114,13 +104,35 @@ void	Request::parseHeaders(std::string headersContent){
 }
 
 void	Request::parseBody(){
-
-	std::stringstream ss(header.at("content-length"));
-	long double contentLength;
-	ss >> contentLength;
-	
+	if(header.find("transfer-encoding") != header.end()){
+		std::string	transferEncoding = header.at("transfer-encoding");
+		if(transferEncoding =="chunked"){
+			size_t	chuckSizeStrPos = data.find(CRLF);
+			std::string	chuckSizeStr = data.substr(0, chuckSizeStrPos);
+			std::stringstream	ss(chuckSizeStr);
+			std::size_t	chuckSize = 0;
+			ss >> std::hex >> chuckSize;
+			if(data.find("\r\n0\r\n") == 0 || data.find("0\r\n") == 0){
+				isBodyParsed = true;
+				return;
+			}
+			if(data.size() < chuckSize)
+				return;
+			data.erase(0, chuckSizeStr.size() + 2);
+			body.append(data.substr(0, chuckSize));
+			data.erase(0, chuckSize);
+			if(data.find("\r\n0\r\n") == 0 || data.find("0\r\n") == 0){
+				isBodyParsed = true;
+				return;
+			}
+			if(data.find(CRLF) == 0)
+				data.erase(0, 2);
+			if(data.size() > 0)
+				parseBody();
+			return;
+		}
+	}
 	if(contentLength > 0){
-		std::cout << "\n\ncontent-lenght=" << contentLength <<"\n\n";
 		if(data.size() > config.bodySizeLimit)
 		{
 			errorCode = 413;
@@ -182,4 +194,13 @@ void	Request::parse(std::string const requestData, Config *config){
 			return;
 		}
 	}
+}
+
+bool Request::isMultiPart(){
+	if(header.find("content-type") != header.end()){
+		std::string contentType = header.at("content-type");
+		if(contentType.find("multipart/form-data") != std::string::npos)
+			return true;
+	}
+	return false;
 }

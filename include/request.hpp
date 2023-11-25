@@ -20,7 +20,6 @@ class Request {
 	bool								isHeadersParsed;
 	bool								isBodyParsed;
 
-	bool	validateUri(std::string uri);
 	bool	validateMethod(std::string method);
 
 	public:
@@ -31,6 +30,7 @@ class Request {
 		void	parseBody();
 		void	parse(std::string const requestData, Config *config);
 		bool	isParsed();
+		bool	isMultiPart();
 		int 	getErrorCode();
 		std::string							data;
 		std::string							method;
@@ -38,6 +38,7 @@ class Request {
 		std::string							httpVersion;
 		std::map<std::string, std::string>	header;
 		std::string							body;
+		long double							contentLength;
 		void	setErrorCode(int code);
 };
 
