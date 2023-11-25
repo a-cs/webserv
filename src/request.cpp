@@ -104,6 +104,34 @@ void	Request::parseHeaders(std::string headersContent){
 }
 
 void	Request::parseBody(){
+	if(header.find("transfer-encoding") != header.end()){
+		std::string	transferEncoding = header.at("transfer-encoding");
+		if(transferEncoding =="chunked"){
+			size_t	chuckSizeStrPos = data.find(CRLF);
+			std::string	chuckSizeStr = data.substr(0, chuckSizeStrPos);
+			std::stringstream	ss(chuckSizeStr);
+			std::size_t	chuckSize = 0;
+			ss >> std::hex >> chuckSize;
+			if(data.find("\r\n0\r\n") == 0 || data.find("0\r\n") == 0){
+				isBodyParsed = true;
+				return;
+			}
+			if(data.size() < chuckSize)
+				return;
+			data.erase(0, chuckSizeStr.size() + 2);
+			body.append(data.substr(0, chuckSize));
+			data.erase(0, chuckSize);
+			if(data.find("\r\n0\r\n") == 0 || data.find("0\r\n") == 0){
+				isBodyParsed = true;
+				return;
+			}
+			if(data.find(CRLF) == 0)
+				data.erase(0, 2);
+			if(data.size() > 0)
+				parseBody();
+			return;
+		}
+	}
 	if(contentLength > 0){
 		if(data.size() > config.bodySizeLimit)
 		{

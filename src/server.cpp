@@ -117,7 +117,9 @@ void	Server::handleMultipart(Request *request){
 }
 
 void	Server::handleRequest(Request *request, Response *response){
-	std::cout << "hr errorcode=" << request->getErrorCode() << "\n";
+	std::cout << "req errorcode=" << request->getErrorCode() << "\n";
+
+	std::cout << "REQ body=" << request->body << "|\n";
 	if(request->getErrorCode() != 0){
 		response->setStatusCode(request->getErrorCode());
 		return;
