@@ -39,11 +39,17 @@ void	Response::renderErrorPage(){
 	setBody(ss.str());
 }
 
-void	Response::setStatusCode(int newStatusCode){
+void	Response::setStatusCode(int newStatusCode, Config &config){
 	statusCode = newStatusCode;
 
 	if(statusCode >= 400){
-		renderErrorPage();
+		std::map<int, std::string>:: iterator it;
+		for(it = config.errorPageList.begin(); it != config.errorPageList.end(); ++it) {
+			if (it->first == newStatusCode)
+				setBody(utils::getFile(config.root + "/" + it->second));
+			else
+				renderErrorPage();
+		}
 	}
 }
 

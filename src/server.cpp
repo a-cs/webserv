@@ -121,14 +121,14 @@ void	Server::handleRequest(Request *request, Response *response){
 
 	std::cout << "REQ body=" << request->body << "|\n";
 	if(request->getErrorCode() != 0){
-		response->setStatusCode(request->getErrorCode());
+		response->setStatusCode(request->getErrorCode(), config);
 		return;
 	}
 	std::cout << "if1|\n";
 
 	if (config.isRedirection(request->uri)) {
 		std::string redirect = config.getRedirection(request->uri);
-		response->setStatusCode(303);
+		response->setStatusCode(303, config);
 		response->setHeader("Location", redirect);
 		return;
 	}
@@ -137,21 +137,21 @@ void	Server::handleRequest(Request *request, Response *response){
 
 	if(request->isMultiPart()){
 		handleMultipart(request);
-		response->setStatusCode(201);
+		response->setStatusCode(201, config);
 		return;
 	}
 	std::cout << "if3|\n";
 
 
 	if(!utils::pathExists(this->config.root + request->uri)){
-		response->setStatusCode(404);
+		response->setStatusCode(404, config);
 		return;
 	}
 	std::cout << "if4|\n";
 
 
 	if (request->body.size() > config.bodySizeLimit){
-		response->setStatusCode(413);
+		response->setStatusCode(413, config);
 		return;
 	}
 
@@ -164,7 +164,7 @@ void	Server::handleRequest(Request *request, Response *response){
 		std::cout << "\n\nResultCGI=" << result <<"|\n";
 		std::cout << "find=" << result.find("Error") <<"|\n\n";
 		if (result.find("Error") != std::string::npos) {
-			response->setStatusCode(500);
+			response->setStatusCode(500, config);
 		}
 		response->setContentType("json");
 		response->setBody(result);
@@ -201,7 +201,7 @@ void	Server::handleRequest(Request *request, Response *response){
 				}
 			}
 			if(notFound)
-				response->setStatusCode(404);
+				response->setStatusCode(404, config);
 		}
 		return;
 	}

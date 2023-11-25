@@ -5,6 +5,7 @@
 #include <sstream>
 #include <map>
 #include "utils.hpp"
+#include "config.hpp"
 
 #define CRLF "\r\n"
 #define SP " "
@@ -22,7 +23,7 @@ class Response {
 		Response();
 		~Response();
 		int			statusCode;
-		void		setStatusCode(int newStatusCode);
+		void		setStatusCode(int newStatusCode, Config &config);
 		int			getStatusCode();
 		std::string	getReasonPhrase();
 		std::string	getMessage();

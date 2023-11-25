@@ -198,19 +198,19 @@ void ParseConfig::addConfigProperties(std::string line, Config *config) {
         this->error.onError = true;
         // this->error.msg = " client_max_body_size falhou";
         return;
-    } else if (tokens[0] == "erro_page" && tokens.size() == 3) {
+    } else if (tokens[0] == "error_page" && tokens.size() == 3) {
         std::stringstream ss(tokens[1]);
         int code;
         ss >> code;
         if (code < 400) {
             this->error.onError = true;
-            // this->error.msg = " erro_page falhou";
+            // this->error.msg = " error_page codigo falhou";
             return;
         }
         config->errorPageList[code] = tokens[2];
-    } else if (tokens[0] == "erro_page" && tokens.size() != 3) {
+    } else if (tokens[0] == "error_page" && tokens.size() != 3) {
         this->error.onError = true;
-        // this->error.msg = " erro_page falhou";
+        // this->error.msg = " error_page falhou";
         return;
     } else {
         this->error.onError = true;

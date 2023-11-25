@@ -21,6 +21,7 @@ Config &Config::operator=(Config const &obj){
 		this->serverNamesList = obj.serverNamesList;
 		this->bodySizeLimit = obj.bodySizeLimit;
 		this->locationList = obj.locationList;
+        this->errorPageList = obj.errorPageList;
 	}
 	return (*this);
 }	
