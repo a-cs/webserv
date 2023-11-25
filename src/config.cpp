@@ -33,6 +33,7 @@ void Config::clear() {
     this->serverNamesList.push_back("localhost");
     this->bodySizeLimit = 1024*1024;
     this->locationList.clear();
+	this->errorPageList.clear();
     this->error.clear();
 }
 

@@ -14,7 +14,11 @@ ParseConfig::ParseConfig(std::string file) {
     getConfig(lines);
     // for (size_t i = 0; i < this->configList.size(); i++) {
     //     std::cout << configList[i].port << std::endl;
-    //     std::cout << configList[i].root << std::endl;
+	// 	std::map<int, std::string>:: iterator it;
+	// 	for(it = configList[i].errorPageList.begin(); it != configList[i].errorPageList.end(); ++it)
+	// 		std::cout << it->first << "=" << it->second << std::endl;
+		
+	// 	std::cout << configList[i].root << std::endl;
     //     for (size_t j = 0; j < this->configList[i].serverNamesList.size(); j++) {
     //         std::cout << configList[i].serverNamesList[j] << std::endl;
     //     }

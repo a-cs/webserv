@@ -44,12 +44,18 @@ void	Response::setStatusCode(int newStatusCode, Config &config){
 
 	if(statusCode >= 400){
 		std::map<int, std::string>:: iterator it;
-		for(it = config.errorPageList.begin(); it != config.errorPageList.end(); ++it) {
-			if (it->first == newStatusCode)
-				setBody(utils::getFile(config.root + "/" + it->second));
-			else
-				renderErrorPage();
+		std::cout <<"\n\nErrorPageSize=" << config.errorPageList.size() << "\n\n";
+		if(config.errorPageList.size() > 0){
+			for(it = config.errorPageList.begin(); it != config.errorPageList.end(); ++it) {
+				if (it->first == newStatusCode){
+					setBody(utils::getFile(config.root + "/" + it->second));
+					return;
+				}
+			}
+			renderErrorPage();
 		}
+		else
+			renderErrorPage();
 	}
 }
 
