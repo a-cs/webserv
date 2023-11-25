@@ -29,17 +29,6 @@ bool	Request::validateMethod(std::string method){
 	return true;
 }
 
-bool	Request::validateUri(std::string uri){
-	for (size_t i = 0; i < config.locationList.size(); i++){
-		if(config.locationList[i].path == uri){
-			return true;
-		}
-	}
-	errorCode = 404;
-	std::cerr << "Not Found\n";
-	return false;
-}
-
 void	Request::parseRequestLine(std::string requestLine){
 	std::vector<std::string> requestLineTokens = utils::split(requestLine, " "); 
 	if(requestLineTokens.size() != 3){
@@ -54,10 +43,6 @@ void	Request::parseRequestLine(std::string requestLine){
 		std::cout << "\nmethod=" << method <<"\n";
 		std::cout << "uri=" << uri <<"\n";
 		std::cout << "httpVersion=" << httpVersion <<"\n";
-
-		if(!validateUri(uri)){
-			return;
-		}
 
 		if(!validateMethod(method)){
 			return;
@@ -119,6 +104,34 @@ void	Request::parseHeaders(std::string headersContent){
 }
 
 void	Request::parseBody(){
+	if(header.find("transfer-encoding") != header.end()){
+		std::string	transferEncoding = header.at("transfer-encoding");
+		if(transferEncoding =="chunked"){
+			size_t	chuckSizeStrPos = data.find(CRLF);
+			std::string	chuckSizeStr = data.substr(0, chuckSizeStrPos);
+			std::stringstream	ss(chuckSizeStr);
+			std::size_t	chuckSize = 0;
+			ss >> std::hex >> chuckSize;
+			if(data.find("\r\n0\r\n") == 0 || data.find("0\r\n") == 0){
+				isBodyParsed = true;
+				return;
+			}
+			if(data.size() < chuckSize)
+				return;
+			data.erase(0, chuckSizeStr.size() + 2);
+			body.append(data.substr(0, chuckSize));
+			data.erase(0, chuckSize);
+			if(data.find("\r\n0\r\n") == 0 || data.find("0\r\n") == 0){
+				isBodyParsed = true;
+				return;
+			}
+			if(data.find(CRLF) == 0)
+				data.erase(0, 2);
+			if(data.size() > 0)
+				parseBody();
+			return;
+		}
+	}
 	if(contentLength > 0){
 		if(data.size() > config.bodySizeLimit)
 		{

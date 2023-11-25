@@ -150,6 +150,7 @@ int	start(EpollHandler *epollHandler) {
 				delete connection;
 
 				std::cout << "end if res\n";
+				std::cout << "resbody=|" << message <<"\n|\n";
 				continue;
 			}
 		}

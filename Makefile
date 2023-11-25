@@ -14,6 +14,7 @@ SRC := config.cpp \
 		request.cpp \
 		response.cpp \
 		server.cpp \
+		cgi.cpp \
 		utils.cpp
 
 OBJ_DIR := ./objs

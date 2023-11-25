@@ -117,7 +117,9 @@ void	Server::handleMultipart(Request *request){
 }
 
 void	Server::handleRequest(Request *request, Response *response){
-	std::cout << "hr errorcode=" << request->getErrorCode() << "\n";
+	std::cout << "req errorcode=" << request->getErrorCode() << "\n";
+
+	std::cout << "REQ body=" << request->body << "|\n";
 	if(request->getErrorCode() != 0){
 		response->setStatusCode(request->getErrorCode());
 		return;
@@ -130,6 +132,11 @@ void	Server::handleRequest(Request *request, Response *response){
 		return;
 	}
 
+	if(!utils::pathExists(this->config.root + request->uri)){
+		response->setStatusCode(404);
+		return;
+	}
+
 	// lidando com cgi
 	if(config.isValidCgiRequest(request->uri)) {
 		Cgi cgi((request->uri + config.getCgiFile(request->uri)), *request);
@@ -139,18 +146,19 @@ void	Server::handleRequest(Request *request, Response *response){
 			return;
 		}
 		response->setBody("");
+		return;
 	}
   
 	if(utils::isFile(this->config.root + request->uri)) {
 		if (request->method == "DELETE") {
 			if (remove((this->config.root + request->uri).c_str()) != 0) {
 				request->setErrorCode(400);
-				return;
 			}
 		}
 		else {
 			response->setBody(utils::getFile(this->config.root + request->uri));
 			//todo: adicionar content type com a externsao do arquivo
 		}
+		return;
 	}
 }
