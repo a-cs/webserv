@@ -45,6 +45,13 @@ bool utils::startsWith(const std::string &s, const std::string &c) {
   return (s.substr(0, c.size()) == c);
 }
 
+bool utils::isDirectory(const std::string &path){
+	struct stat buf;
+	if(stat(path.c_str(), &buf) == -1)
+		return false;
+	return S_ISDIR(buf.st_mode);
+}
+
 bool  utils::isFile(const std::string &s) {
   struct stat buf;
   if(stat(s.c_str(), &buf) == -1)
