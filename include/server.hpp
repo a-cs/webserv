@@ -28,6 +28,7 @@ class Server {
 		int			create();
 		std::string	getRequestData(int fd);
 		void		handleRequest(Request *request, Response *response);
+		void		handleMultipart(Request *request);
 };
 
 #endif
