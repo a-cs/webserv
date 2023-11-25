@@ -158,11 +158,35 @@ void	Server::handleRequest(Request *request, Response *response){
 	std::cout << "\n\nifDIR=" << utils::isDirectory(this->config.root + request->uri) << "\n\n";
 
 	if(utils::isDirectory(this->config.root + request->uri)){
-		// for(size_t i = 0; i < config.locationList.size(); i++) {
-        // if (config.locationList[i].path == request->uri) {
-		// 	config.locationList[i].indexList
-            
-        // }
+		bool	notFound = true;
+		for(size_t i = 0; i < config.locationList.size(); i++) {
+			if (notFound && config.locationList[i].path == request->uri) {
+				for(size_t j = 0; j < config.locationList[i].indexList.size(); j++){
+					std::string path = utils::endsWith(this->config.root + request->uri, "/") ?
+											this->config.root + request->uri + config.locationList[i].indexList[j] :
+											this->config.root + request->uri + "/" + config.locationList[i].indexList[j];
+					if(utils::isFile(path)){
+						response->setBody(utils::getFile(path));
+						notFound = false;
+						break;
+					}
+				}
+			}
+		}
+
+		if(notFound && request->uri != "/"){
+			for(size_t i = 0; i < config.locationList.size(); i++) {
+				if (config.locationList[i].path == request->uri) {
+					if(config.locationList[i].isDirectoryEnable){
+						std::cout << "listar dir!\n\n";
+						notFound = false;
+					}
+					break;
+				}
+			}
+			if(notFound)
+				response->setStatusCode(404);
+		}
 		return;
 	}
 
