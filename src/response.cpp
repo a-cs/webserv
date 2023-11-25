@@ -205,6 +205,55 @@ void Response::setContentType(const std::string &fileExtenstion)
 		setHeader("Content-Type", "application/octet-stream");
 }
 
+void	Response::renderDirectory(std::string root, std::string path){
+	DIR	*dir;
+
+	struct dirent	*ent;
+	struct stat		fileStat;
+	std::string		fullPath, modifiedTime;
+	std::stringstream	ss;
+	if(path[path.size() - 1] != '/')
+		path += '/';
+	ss << "<html>"
+		<< "<head>"
+		<< "<title>Index of " << path << "</title>"
+		<< "</head>"
+		<< "<body class=\"container\">"
+		<< "<h1>Index of " << path << "</h1>"
+		<< "<table>"
+		<< "<tr><th>Name</th><th>Size</th><th>Date Modified</th></tr>";
+
+	std::string dirPath = root + path;
+	dir = opendir(dirPath.c_str());
+	while((ent = readdir(dir)) != NULL){
+		if(strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
+			continue;
+		fullPath = dirPath + "/" + ent->d_name;
+		if(stat(fullPath.c_str(), &fileStat) == -1)
+			continue;
+		modifiedTime = ctime(&fileStat.st_mtime);
+		ss << "<tr>";
+		if(utils::isDirectory(fullPath)){
+			ss << "<td><a href=\"" << path << ent->d_name << "\">" << ent->d_name
+				<< "/</a></td>";
+			ss << "<td>-</td>";
+		}
+		else {
+			ss << "<td><a href=\"" << path << ent->d_name << "\">" << ent->d_name
+			   << "</a></td>";
+			ss << "<td>" << utils::formatSize(fileStat.st_size) << "</td>";
+		}
+		ss << "<td>" << modifiedTime;
+		ss << "</td></tr>";
+	}
+	closedir(dir);
+	ss << "</table>"
+	   << "</body>"
+	   << "</html>";
+
+	setBody(ss.str());
+}
+
 std::string	Response::getMessage(){
 	std::stringstream	message;
 

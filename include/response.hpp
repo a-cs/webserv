@@ -4,6 +4,9 @@
 #include <iostream>
 #include <sstream>
 #include <map>
+#include <sys/types.h>
+#include <dirent.h>
+#include <cstring>
 #include "utils.hpp"
 #include "config.hpp"
 
@@ -30,6 +33,7 @@ class Response {
 		void		setBody(std::string content);
 		void		setHeader(std::string key, std::string value);
 		void		setContentType(const std::string &fileExtenstion);
+		void		renderDirectory(std::string root, std::string path);
 };
 
 #endif

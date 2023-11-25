@@ -195,9 +195,10 @@ void	Server::handleRequest(Request *request, Response *response){
 				if (config.locationList[i].path == request->uri) {
 					if(config.locationList[i].isDirectoryEnable){
 						std::cout << "listar dir!\n\n";
+						response->renderDirectory(config.root, request->uri);
 						notFound = false;
+						break;
 					}
-					break;
 				}
 			}
 			if(notFound)
