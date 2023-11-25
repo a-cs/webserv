@@ -10,6 +10,10 @@ void Response::setBody(std::string content){
 	body = content;
 }
 
+void	Response::setHeader(std::string key, std::string value){
+	header[key] = value;
+}
+
 void	Response::renderErrorPage(){
 	std::stringstream	ss;
 
@@ -178,6 +182,13 @@ std::string	Response::getMessage(){
 
 	message << httpVersion << SP << statusCode << SP << getReasonPhrase() << CRLF;
 	
+	std::map<std::string, std::string>:: iterator it;
+
+	for(it = header.begin(); it != header.end(); ++it){
+		
+		message << it->first << ": " << it->second << CRLF;
+	}
+
 	message << CRLF;
 
 	if (this->body.size() > 0)

@@ -127,7 +127,8 @@ void	Server::handleRequest(Request *request, Response *response){
 
 	if (config.isRedirection(request->uri)) {
 		std::string redirect = config.getRedirection(request->uri);
-		response->setBody("HTTP/1.1 301 Found\r\nLocation: http://" + redirect + "\r\n\r\n");
+		response->setStatusCode(303);
+		response->setHeader("Location", redirect);
 		return;
 	}
 

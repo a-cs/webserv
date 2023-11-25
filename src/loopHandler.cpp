@@ -92,9 +92,29 @@ int	start(EpollHandler *epollHandler) {
 				std::cout << "end if new\n";
 				continue;
 			}
+
+			if (epollHandler->events[i].events & (EPOLLRDHUP | EPOLLHUP))
+			{	
+				std::cout << "if ?\n";
+				epoll_ctl(epollHandler->epollFd, EPOLL_CTL_DEL, connection->fd, 0);
+				close(connection->fd);
+				delete connection;
+				std::cout << "endif ?\n";
+				continue;
+			}
+
 			if(epollHandler->events[i].events & EPOLLIN){
 				std::cout << "if req\n";
 				requestData = server->getRequestData(connection->fd);
+				if(!requestData.size()){
+					std::cout << "if reqdataSize\n";
+					epoll_ctl(epollHandler->epollFd, EPOLL_CTL_DEL, connection->fd, 0);
+					close(connection->fd);
+					delete connection;
+					std::cout << "endif reqdataSize\n";
+					continue;
+				}
+				std::cout << "\nREQsize:\n" << requestData.size() << "|||\n";
 				std::cout << "\nREQ:\n" << requestData << "|||\n";
 				
 				connection->req.parse(requestData, &server->config);
