@@ -29,17 +29,6 @@ bool	Request::validateMethod(std::string method){
 	return true;
 }
 
-bool	Request::validateUri(std::string uri){
-	for (size_t i = 0; i < config.locationList.size(); i++){
-		if(config.locationList[i].path == uri){
-			return true;
-		}
-	}
-	errorCode = 404;
-	std::cerr << "Not Found\n";
-	return false;
-}
-
 void	Request::parseRequestLine(std::string requestLine){
 	std::vector<std::string> requestLineTokens = utils::split(requestLine, " "); 
 	if(requestLineTokens.size() != 3){
@@ -54,10 +43,6 @@ void	Request::parseRequestLine(std::string requestLine){
 		std::cout << "\nmethod=" << method <<"\n";
 		std::cout << "uri=" << uri <<"\n";
 		std::cout << "httpVersion=" << httpVersion <<"\n";
-
-		if(!validateUri(uri)){
-			return;
-		}
 
 		if(!validateMethod(method)){
 			return;

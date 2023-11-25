@@ -20,7 +20,6 @@ class Request {
 	bool								isHeadersParsed;
 	bool								isBodyParsed;
 
-	bool	validateUri(std::string uri);
 	bool	validateMethod(std::string method);
 
 	public:
