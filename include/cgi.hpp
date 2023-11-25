@@ -2,6 +2,14 @@
 #define CGI_HPP
 
 #include <string>
+#include <csignal>
+#include <fcntl.h>
+#include <iostream>
+#include <sstream>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 #include "request.hpp"
 
 class Cgi
