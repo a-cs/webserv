@@ -28,6 +28,7 @@ class Response {
 		std::string	getMessage();
 		void		setBody(std::string content);
 		void		setHeader(std::string key, std::string value);
+		void		setContentType(const std::string &fileExtenstion);
 };
 
 #endif

@@ -177,6 +177,28 @@ std::string	Response::getReasonPhrase(){
 	}
 }
 
+void Response::setContentType(const std::string &fileExtenstion)
+{
+	if (fileExtenstion == "html")
+		setHeader("Content-Type", "text/html; charset=UTF-8");
+	else if (fileExtenstion == "css")
+		setHeader("Content-Type", "text/css; charset=UTF-8");
+	else if (fileExtenstion == "js")
+		setHeader("Content-Type", "text/javascript; charset=UTF-8");
+	else if (fileExtenstion == "jpg" || fileExtenstion == "jpeg")
+		setHeader("Content-Type", "image/jpeg");
+	else if (fileExtenstion == "png")
+		setHeader("Content-Type", "image/png");
+	else if (fileExtenstion == "ico")
+		setHeader("Content-Type", "image/x-icon");
+	else if (fileExtenstion == "txt")
+		setHeader("Content-Type", "text/plain");
+	else if (fileExtenstion == "json")
+		setHeader("Content-Type", "application/json");
+	else
+		setHeader("Content-Type", "application/octet-stream");
+}
+
 std::string	Response::getMessage(){
 	std::stringstream	message;
 

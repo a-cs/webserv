@@ -12,7 +12,7 @@ Cgi::~Cgi() {
 
 std::string Cgi::exec() {
     if (access(this->fullPath.c_str(), R_OK) != 0)
-		return "error";
+		return "Error";
 	
 	std::signal(SIGCHLD, SIG_IGN);
 	int pid = fork();

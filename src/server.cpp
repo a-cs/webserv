@@ -124,6 +124,7 @@ void	Server::handleRequest(Request *request, Response *response){
 		response->setStatusCode(request->getErrorCode());
 		return;
 	}
+	std::cout << "if1|\n";
 
 	if (config.isRedirection(request->uri)) {
 		std::string redirect = config.getRedirection(request->uri);
@@ -131,17 +132,23 @@ void	Server::handleRequest(Request *request, Response *response){
 		response->setHeader("Location", redirect);
 		return;
 	}
+	std::cout << "if2|\n";
+
 
 	if(request->isMultiPart()){
 		handleMultipart(request);
 		response->setStatusCode(201);
 		return;
 	}
+	std::cout << "if3|\n";
+
 
 	if(!utils::pathExists(this->config.root + request->uri)){
 		response->setStatusCode(404);
 		return;
 	}
+	std::cout << "if4|\n";
+
 
 	if (request->body.size() > config.bodySizeLimit){
 		response->setStatusCode(413);
@@ -152,12 +159,14 @@ void	Server::handleRequest(Request *request, Response *response){
 
 	// lidando com cgi
 	if(config.isValidCgiRequest(request->uri)) {
-		Cgi cgi((request->uri + "/" + config.getCgiFile(request->uri)), this->config.port, request);
+		Cgi cgi((config.root + request->uri + "/" + config.getCgiFile(request->uri)), this->config.port, request);
 		std::string result = cgi.exec();
-		if (result == "error") {
-			request->setErrorCode(500);
-			return;
+		std::cout << "\n\nResultCGI=" << result <<"|\n";
+		std::cout << "find=" << result.find("Error") <<"|\n\n";
+		if (result.find("Error") != std::string::npos) {
+			response->setStatusCode(500);
 		}
+		response->setContentType("json");
 		response->setBody(result);
 		return;
 	}
