@@ -10,15 +10,16 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-#include "request.hpp"
+#include "server.hpp"
 
 class Cgi
 {
 	private:
-        std::string _fullPath;
-        Request &_request;
+        std::string fullPath;
+		std::string	port;
+        Server &server;
 	public:
-		Cgi(std::string const &fullPath, Request &request);
+		Cgi(std::string const &fullPath, Server &server);
 		~Cgi();
         
         int exec();

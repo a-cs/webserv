@@ -139,7 +139,7 @@ void	Server::handleRequest(Request *request, Response *response){
 
 	// lidando com cgi
 	if(config.isValidCgiRequest(request->uri)) {
-		Cgi cgi((request->uri + "/" + config.getCgiFile(request->uri)), *request);
+		Cgi cgi((request->uri + "/" + config.getCgiFile(request->uri)), *this);
 		int result = cgi.exec();
 		if (result != 0) {
 			request->setErrorCode(400);
