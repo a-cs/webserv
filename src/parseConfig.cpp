@@ -281,11 +281,11 @@ void ParseConfig::addLocationProperties(std::string line, Location *loc) {
         this->error.onError = true;
         // this->error.msg = " directory_listing falhou";
         return;
-    } else if (tokens[0] == "redirect" && tokens.size() == 2) {
+    } else if (tokens[0] == "redirection" && tokens.size() == 2) {
         loc->redirect = tokens[1];
-    } else if (tokens[0] == "redirect" && tokens.size() != 2) {
+    } else if (tokens[0] == "redirection" && tokens.size() != 2) {
         this->error.onError = true;
-        // this->error.msg = " redirect falhou";
+        // this->error.msg = " redirection falhou";
         return;
     } else if (tokens[0] == "upload_path" && tokens.size() == 2) {
         loc->uploadPath = tokens[1];

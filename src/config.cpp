@@ -56,3 +56,23 @@ std::string Config::getCgiFile(std::string requestPath) {
     }
     return "";
 }
+
+bool	Config::isRedirection(std::string requestPath) {
+    for(size_t i = 0; i < locationList.size(); i++) {
+        if (locationList[i].path == requestPath) {
+            if (locationList[i].redirect == "")
+                continue;
+            else
+                return true;
+        }
+    }
+    return false;
+}
+
+std::string Config::getRedirection(std::string requestPath) {
+    for(size_t i = 0; i < locationList.size(); i++) {
+        if (locationList[i].path == requestPath)
+            return locationList[i].redirect;
+    }
+    return "";
+}

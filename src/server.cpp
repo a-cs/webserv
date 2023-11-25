@@ -125,6 +125,12 @@ void	Server::handleRequest(Request *request, Response *response){
 		return;
 	}
 
+	if (config.isRedirection(request->uri)) {
+		std::string redirect = config.getRedirection(request->uri);
+		response->setBody("HTTP/1.1 301 Found\r\nLocation: http://" + redirect + "\r\n\r\n");
+		return;
+	}
+
 	if(request->isMultiPart()){
 		handleMultipart(request);
 		response->setStatusCode(201);
@@ -145,7 +151,7 @@ void	Server::handleRequest(Request *request, Response *response){
 
 	// lidando com cgi
 	if(config.isValidCgiRequest(request->uri)) {
-		Cgi cgi((request->uri + "/" + config.getCgiFile(request->uri)), *this, *request);
+		Cgi cgi((request->uri + "/" + config.getCgiFile(request->uri)), this->config.port, request);
 		std::string result = cgi.exec();
 		if (result == "error") {
 			request->setErrorCode(500);

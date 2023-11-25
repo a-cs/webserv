@@ -19,13 +19,12 @@ class Response {
 	public:
 		Response();
 		~Response();
-	int			statusCode;
+		int			statusCode;
 		void		setStatusCode(int newStatusCode);
 		int			getStatusCode();
 		std::string	getReasonPhrase();
 		std::string	getMessage();
 		void		setBody(std::string content);
-
 };
 
 #endif

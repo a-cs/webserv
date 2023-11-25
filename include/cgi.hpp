@@ -12,15 +12,14 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
-#include "server.hpp"
+#include "request.hpp"
 
 class Cgi
 {
 	private:
-		Request request;
+		Request *request;
         std::string fullPath;
-		std::string	port;
-        Server &server;
+		int	port;
 		int		tempFd;
 		char	**args;
 		char	**envp;
@@ -31,7 +30,7 @@ class Cgi
 		void	executeCgi();
 
 	public:
-		Cgi(std::string const &fullPath, Server &server, Request &request);
+		Cgi(std::string const fullPath, int port, Request *request);
 		~Cgi();
         
         std::string	exec();

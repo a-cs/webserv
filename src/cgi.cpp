@@ -1,7 +1,10 @@
 #include "../include/cgi.hpp"
 
-Cgi::Cgi(std::string const &fullPath, Server &server, Request &request)
-    : fullPath(fullPath), server(server), request(request) {}
+Cgi::Cgi(std::string const fullPath, int port, Request *request) {
+	this->fullPath = fullPath;
+	this->port = port;
+	this->request = request;
+}
 
 Cgi::~Cgi() {
 	std::remove("tempFile");
@@ -14,10 +17,6 @@ std::string Cgi::exec() {
 	std::signal(SIGCHLD, SIG_IGN);
 	int pid = fork();
 	if (pid == 0) {
-		std::stringstream ss;
-		ss << server.config.port;
-		this->port = ss.str();
-
 		prepareCGI();
 		executeCgi();
 		return "";
@@ -52,12 +51,12 @@ void Cgi::prepareCGI() {
 	// create args
 	temp.push_back("python3");
 	temp.push_back(fullPath);
-	temp.push_back(request.body);
+	temp.push_back(request->body);
 	this->args = createArrayOfStrings(temp);
 
 	// create envp
 	temp.clear();
-	temp.push_back("REQUEST_BODY=" + request.body);
+	temp.push_back("REQUEST_BODY=" + request->body);
 	this->envp = createArrayOfStrings(temp);
 }
 
