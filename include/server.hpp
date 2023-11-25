@@ -13,6 +13,7 @@
 #include "request.hpp"
 #include "response.hpp"
 #include "config.hpp"
+#include "cgi.hpp"
 
 class Server {
 	private:

@@ -256,12 +256,18 @@ void ParseConfig::addLocationProperties(std::string line, Location *loc) {
         // this->error.msg = " index falhou";
         return;
     } else if (tokens[0] == "cgi_pass" && tokens.size() == 2) {
-        loc->cgi = tokens[1];
+        loc->cgiPass = tokens[1];
     } else if (tokens[0] == "cgi_pass" && tokens.size() != 2) {
         this->error.onError = true;
         // this->error.msg = " cgi_pass falhou";
         return;
-    } else if (tokens[0] == "directory_listing" && tokens.size() == 2) {
+    } else if (tokens[0] == "cgi" && tokens.size() == 2) {
+        loc->cgi = tokens[1];
+    } else if (tokens[0] == "cgi" && tokens.size() != 2) {
+        this->error.onError = true;
+        // this->error.msg = " cgi falhou";
+        return;
+    }else if (tokens[0] == "directory_listing" && tokens.size() == 2) {
         if (tokens[1] == "on")
             loc->isDirectoryEnable = true;
         else if (tokens[1] == "off")

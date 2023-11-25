@@ -16,6 +16,8 @@ class Config
 		Config(Config const &obj);
 		Config &operator=(Config const &obj);
 		void clear();
+		bool isValidCgiRequest(std::string requestPath);
+		std::string getCgiFile(std::string requestPath);
 
         int port;
         std::string root;

@@ -123,12 +123,24 @@ void	Server::handleRequest(Request *request, Response *response){
 		return;
 	}
 
+
 	if(request->isMultiPart()){
 		handleMultipart(request);
 		response->setStatusCode(201);
 		return;
 	}
 
+	// lidando com cgi
+	if(config.isValidCgiRequest(request->uri)) {
+		Cgi cgi((request->uri + config.getCgiFile(request->uri)), *request);
+		int result = cgi.exec();
+		if (result != 0) {
+			request->setErrorCode(400);
+			return;
+		}
+		response->setBody("");
+	}
+  
 	if(utils::isFile(this->config.root + request->uri)) {
 		if (request->method == "DELETE") {
 			if (remove((this->config.root + request->uri).c_str()) != 0) {
