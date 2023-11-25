@@ -17,4 +17,4 @@ def sum():
 	except:
 		return "{\"Error\": \"Invalid value\"}"
 
-print(str(sum())+"")
+print(sum())
