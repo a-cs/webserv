@@ -38,8 +38,11 @@ void Config::clear() {
 bool Config::isValidCgiRequest(std::string requestPath) {
     for(size_t i = 0; i < locationList.size(); i++) {
         if (locationList[i].path == requestPath) {
-            if(locationList[i].cgiPass == locationList[i].cgi.substr(locationList[i].cgi.find_last_of(".") + 1))
-                return true;
+            if (locationList[i].cgi == "" || locationList[i].cgiPass == "")
+                continue;
+            std::string fileExtension = locationList[i].cgi.substr(locationList[i].cgi.find_last_of("."));
+            if(locationList[i].cgiPass == fileExtension)
+                return true && fileExtension == ".py";
             return false;
         }
     }
