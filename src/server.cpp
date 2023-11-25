@@ -214,7 +214,8 @@ void	Server::handleRequest(Request *request, Response *response){
 		}
 		else {
 			response->setBody(utils::getFile(this->config.root + request->uri));
-			//todo: adicionar content type com a externsao do arquivo
+			std::string extension = request->uri.substr(request->uri.rfind(".") + 1);
+			response->setContentType(extension);
 		}
 		return;
 	}
