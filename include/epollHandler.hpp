@@ -12,7 +12,7 @@
 #include <csignal>
 #include <string.h>
 
-#define MAX_EVENTS 5
+#define MAX_EVENTS 1000
 
 class EpollHandler {
 	private:
