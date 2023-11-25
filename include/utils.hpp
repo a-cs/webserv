@@ -14,6 +14,7 @@ namespace utils {
 	bool						isNumber(const std::string &s);
 	bool						endsWith(const std::string &s, const std::string &c);
 	bool						startsWith(const std::string &s, const std::string &c);
+	bool						isDirectory(const std::string &path);
 	bool						isFile(const std::string &s);
 	bool						pathExists(std::string path);
 	std::string					getFile(std::string path);

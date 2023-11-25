@@ -125,7 +125,6 @@ void	Server::handleRequest(Request *request, Response *response){
 		return;
 	}
 
-
 	if(request->isMultiPart()){
 		handleMultipart(request);
 		response->setStatusCode(201);
@@ -136,6 +135,13 @@ void	Server::handleRequest(Request *request, Response *response){
 		response->setStatusCode(404);
 		return;
 	}
+
+	if (request->body.size() > config.bodySizeLimit){
+		response->setStatusCode(413);
+		return;
+	}
+
+	std::cout << "ifcgi=" << config.isValidCgiRequest(request->uri) << "|\n";
 
 	// lidando com cgi
 	if(config.isValidCgiRequest(request->uri)) {
@@ -148,7 +154,18 @@ void	Server::handleRequest(Request *request, Response *response){
 		response->setBody("");
 		return;
 	}
-  
+
+	std::cout << "\n\nifDIR=" << utils::isDirectory(this->config.root + request->uri) << "\n\n";
+
+	if(utils::isDirectory(this->config.root + request->uri)){
+		// for(size_t i = 0; i < config.locationList.size(); i++) {
+        // if (config.locationList[i].path == request->uri) {
+		// 	config.locationList[i].indexList
+            
+        // }
+		return;
+	}
+
 	if(utils::isFile(this->config.root + request->uri)) {
 		if (request->method == "DELETE") {
 			if (remove((this->config.root + request->uri).c_str()) != 0) {
