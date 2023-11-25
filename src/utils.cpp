@@ -52,6 +52,11 @@ bool  utils::isFile(const std::string &s) {
   return S_ISREG(buf.st_mode);
 }
 
+bool utils::pathExists(std::string path){
+	struct stat buf;
+	return stat(path.c_str(), &buf) == 0;
+}
+
 std::string	utils::getFile(std::string path) {
   std::ifstream     ifs;
   std::stringstream buf;

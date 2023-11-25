@@ -15,7 +15,8 @@ namespace utils {
 	bool						endsWith(const std::string &s, const std::string &c);
 	bool						startsWith(const std::string &s, const std::string &c);
 	bool						isFile(const std::string &s);
-	std::string			getFile(std::string path);
+	bool						pathExists(std::string path);
+	std::string					getFile(std::string path);
 }
 
 #endif
