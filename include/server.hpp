@@ -17,18 +17,20 @@
 
 class Server {
 	private:
-		int sock;
-		int port;
+		int	sock;
+		int	port;
 
 	public:
 		Config	config;
+
 		Server();
 		~Server();
-		int			getSock();
+
 		int			create();
-		std::string	getRequestData(int fd);
-		void		handleRequest(Request *request, Response *response);
+		int			getSock();
 		void		handleMultipart(Request *request);
+		void		handleRequest(Request *request, Response *response);
+		std::string	getRequestData(int fd);
 };
 
 #endif

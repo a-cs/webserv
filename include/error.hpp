@@ -4,15 +4,14 @@
 #include <string>
 
 class Error {
-    private:
+	public:
+		bool		onError;
+		std::string	msg;
 
-    public:
-        Error();
-        ~Error();
-        void clear();
+		Error();
+		~Error();
 
-        std::string msg;
-        bool onError;
+		void	clear();
 };
 
 #endif

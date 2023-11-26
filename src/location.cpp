@@ -1,7 +1,7 @@
 #include "../include/location.hpp"
 
 Location::Location() {
-    isDirectoryEnable = false;
+	isDirectoryEnable = false;
 }
 
-Location::~Location(){}
+Location::~Location() {}

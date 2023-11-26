@@ -7,27 +7,26 @@
 #include "error.hpp"
 #include <map>
 
-class Config
-{
-	private:
+class Config {
 	public:
+		int							port;
+		Error						error;
+		std::string					root;
+		long double					bodySizeLimit;
+		std::vector<Location>		locationList;
+		std::vector<std::string>	serverNamesList;
+		std::map<int, std::string>	errorPageList;
+
 		Config();
 		~Config();
 		Config(Config const &obj);
 		Config &operator=(Config const &obj);
-		void clear();
-		bool isValidCgiRequest(std::string requestPath);
-		std::string getCgiFile(std::string requestPath);
-		bool	isRedirection(std::string requestPath);
-		std::string getRedirection(std::string requestPath);
 
-        int port;
-        std::string root;
-        std::vector<std::string> serverNamesList;
-        long double bodySizeLimit;
-        std::vector<Location> locationList;
-        Error error;
-		std::map<int, std::string> errorPageList;
+		void		clear();
+		bool		isRedirection(std::string requestPath);
+		bool		isValidCgiRequest(std::string requestPath);
+		std::string	getCgiFile(std::string requestPath);
+		std::string	getRedirection(std::string requestPath);
 };
 
 #endif

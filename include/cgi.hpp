@@ -14,26 +14,25 @@
 #include <vector>
 #include "request.hpp"
 
-class Cgi
-{
+class Cgi {
 	private:
+		int port;
+		int tempFd;
+		char **args;
+		char **envp;
 		Request *request;
-        std::string fullPath;
-		int	port;
-		int		tempFd;
-		char	**args;
-		char	**envp;
+		std::string fullPath;
 
-		char	**createArrayOfStrings(std::vector<std::string> const &vector) const;
-		void	destroyArrayOfStrings(char **array) const;
-		void	prepareCGI();
-		void	executeCgi();
+		char **createArrayOfStrings(std::vector<std::string> const &vector) const;
+		void destroyArrayOfStrings(char **array) const;
+		void prepareCGI();
+		void executeCgi();
 
 	public:
 		Cgi(std::string const fullPath, int port, Request *request);
 		~Cgi();
-        
-        std::string	exec();
+
+		std::string exec();
 };
 
 #endif

@@ -15,21 +15,22 @@
 #include <algorithm>
 
 class ParseConfig {
-    private:
-        std::ifstream fd;
+	private:
+		std::ifstream	fd;
 
-        std::string readFile(std::string file);
-        std::list<std::string> parseFile(std::string fileContent);
-        void getConfig(std::list<std::string> lines);
-        void addConfigProperties(std::string line, Config *config);
-        void addLocationProperties(std::string line, Location *location);
+		void					getConfig(std::list<std::string> lines);
+		void					addConfigProperties(std::string line, Config *config);
+		void					addLocationProperties(std::string line, Location *location);
+		std::string				readFile(std::string file);
+		std::list<std::string>	parseFile(std::string fileContent);
 
-    public:
-        ParseConfig(std::string file);
-        ~ParseConfig();
-        Error error;
+	public:
+		Error error;
 
-        std::vector<Config> configList;
+		ParseConfig(std::string file);
+		~ParseConfig();
+
+		std::vector<Config>	configList;
 };
 
 #endif
