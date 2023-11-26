@@ -98,6 +98,18 @@ void Server::handleMultipart(Request *request) {
 }
 
 void Server::handleRequest(Request *request, Response *response) {
+	bool foundHost = false;
+	for (size_t i = 0; i < config.serverNamesList.size(); i++) {
+		if (config.serverNamesList[i] == request->header["host"].substr(0, request->header["host"].find(":"))) {
+			foundHost = true;
+			break;
+		}
+	}
+	if (!foundHost) {
+		response->setStatusCode(403, config);
+		return;
+	}
+
 	if (request->getErrorCode() != 0) {
 		response->setStatusCode(request->getErrorCode(), config);
 		return;
