@@ -13,6 +13,9 @@ def sum():
 		
 		result = float(num1) + float(num2)
 
+		# while 1 == 1:
+		# 	a = 1
+
 		return ("{\"result\":" + str(result) + "}")
 	except:
 		return "{\"Error\": \"Invalid value\"}"

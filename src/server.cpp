@@ -143,6 +143,10 @@ void Server::handleRequest(Request *request, Response *response) {
 		std::string result = cgi.exec();
 		if (result.find("Error") != std::string::npos)
 			response->setStatusCode(500, config);
+		if (result == ""){
+			response->setStatusCode(508, config);
+			result = "{\"Error\": \"Loop Detected\"}";
+		}
 		response->setContentType("json");
 		response->setBody(result);
 		return;

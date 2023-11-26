@@ -41,6 +41,7 @@ void Response::setStatusCode(int newStatusCode, Config &config) {
 	statusCode = newStatusCode;
 
 	if (statusCode >= 400) {
+		setHeader("Connection", "close");
 		std::map<int, std::string>::iterator it;
 		if (config.errorPageList.size() > 0) {
 			for (it = config.errorPageList.begin(); it != config.errorPageList.end(); ++it) {
