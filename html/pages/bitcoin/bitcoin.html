@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/x-icon" href="favicon.ico">
-	<title>WebServ - Calculator</title>
+	<title>WebServ - Bitcoin Price </title>
 </head>
 <style>
 	* {
@@ -63,22 +63,73 @@
 		margin: 0 auto;
 		display: flex;
 		flex-direction: column;
-	}
-
-	.content p {
-		line-height: 1.2;
-		font-size: 2rem;
-		background-color: rgba(1,7,21,75%);
 		border-radius: 16px;
 		padding: 1rem 2rem;
 		border: 2px solid white;
+		background-color: rgba(1,7,21,75%);
+		margin-bottom: 2rem;
 	}
 
-	.buttonContainer{
+	.content h2 {
+		line-height: 1.2;
+		font-size: 4rem;
+		text-align: center;
+		margin: 0;
+	}
+
+	
+	.inputContainer{
 		flex: 1 0 auto;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
+		align-items: center;
+		gap: 2rem;
+	}
+	
+	.inputContainer span{
+		margin-top: 2rem;
+		font-size: 5rem;
+		font-weight: 800;
+	}
+	
+	.result{
+		justify-content: center;
+		margin-bottom: 2rem;
+	}
+	
+	.result input{
+		color: white !important;
+		background-color: #199b51;
+		border: 2px solid white;
+	}
+
+	.inputs {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.inputs label{
+		font-size: 2rem;
+		text-align: center;
+		margin-bottom: 0.5rem;
+	}
+	
+	.inputs input {
+		border-radius: 16px;
+		padding: 0.5rem 1rem;
+		font-size: 2rem;
+		color: #0d1821;
+		width: 200px;
+		text-align: center;
+		/* margin-bottom: 2rem; */
+	}
+	
+	.buttonContainer{
+		flex: 1 0 auto;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
 		align-items: center;
 	}
 
@@ -90,13 +141,19 @@
 		font-size: 2rem;
 		font-weight: 700;
 		color: #0d1821;
-		cursor: pointer;
 		transition: .3s;
+		cursor: pointer;
 	}
-
+	
 	button:hover{
 		color: white;
 		background-color: #199b51;
+	}
+
+	button:disabled{
+		color: white;
+		background-color: #d4b721;
+		cursor: progress;
 	}
 
 	footer{
@@ -126,23 +183,60 @@
 		line-height: 1.2;
 		text-shadow: 2px 2px #0d1821;
 	}
+
+	.result {
+		text-align: center;
+	}
+
+	.inputs p{
+		margin-top: 1rem;
+	}
+
+	#result{
+		width: 100%;
+	}
+
+	
+	#error{
+		color: red !important;
+	}
+
+	#lastUpdate{
+		font-size: 2rem;
+	}
+
+	#result, #error, #lastUpdate{
+		visibility: hidden;
+	}
 </style>
-<body>
+
+<body onload="getPrice()">
 	<a href="/">
 		<header>
 			<h1>WebServ</h1>
 		</header>
 	</a>
 	<div class="content">
-		<p>The primary function of this web server is to store, process, and deliver web pages to
-			clients. The communication between client and server takes place using the Hypertext
-			Transfer Protocol (HTTP).
-		</p>
+		<h2>Current Bitcoin Price</h2>
+
+		
+		<div class="inputContainer result">
+			<div class="inputs">
+				<input type="text" id="result" value="0" disabled>
+				<p>
+					<span id="error">Error</label>
+				</p>
+				<p>
+					<span id="lastUpdate">-</label>
+				</p>
+			</div>
+		</div>
+
 
 
 		<div class="buttonContainer">
 			<div class="buttonContainer">
-				<button>Calcular</button>
+				<button id="button" onclick="getPrice()">Get Price</button>
 			</div>
 		</div>
 	</div>
@@ -151,5 +245,55 @@
 		<p><a href="https://github.com/a-cs/">Anderson Carneiro Sousa</a></p>
 		<p><a href="https://github.com/a-cs/">Rodrigo Longhi</a></p>
 	</footer>
+
+	<script>
+		async function  getPrice(){
+
+			buttonRef = document.getElementById("button")
+
+			buttonRef.disabled = true
+			buttonRef.innerText = "Loading..."
+			document.getElementById("lastUpdate").style.visibility = "hidden"
+			document.getElementById("error").style.visibility = "hidden"
+			document.getElementById("result").style.visibility = "hidden"
+			
+			const url = "/cgi/get"
+			const method = "GET"
+			
+			try{
+				const respose = await fetch(url, {method})
+				const data = await respose.json()
+				console.log(respose)
+				console.log(data)
+				document.getElementById("error").style.visibility = "hidden"
+				document.getElementById("result").style.visibility = "visible"
+				document.getElementById("result").value = String(data?.result)
+			
+			}
+			catch {
+				console.log("error")
+				document.getElementById("error").innerText = "Error"
+				document.getElementById("result").style.visibility = "hidden"
+				document.getElementById("error").style.visibility = "visible"
+				currentTime = Date.now()
+				document.getElementById("lastUpdate").style.visibility = "visible"
+				console.log("currentTime:", currentTime)
+				document.getElementById("lastUpdate").innerText = new Date(currentTime).toString()
+				buttonRef.disabled = false
+				buttonRef.innerText = "Get New Price"
+			}
+			// if(data?.Error){
+			// }
+			// else{
+			// 	console.log("ok")
+			// }
+			currentTime = Date.now()
+			document.getElementById("lastUpdate").style.visibility = "visible"
+			console.log("currentTime:", currentTime)
+			document.getElementById("lastUpdate").innerText = new Date(currentTime).toString()
+			buttonRef.disabled = false
+			buttonRef.innerText = "Get New Price"
+		};
+	</script>
 </body>
 </html>
