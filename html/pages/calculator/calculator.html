@@ -183,8 +183,16 @@
 		text-shadow: 2px 2px #0d1821;
 	}
 
-	#hide{
-		visibility: hidden;;
+	#hide, #result{
+		visibility: hidden;
+		width: 100%;
+	}
+
+	#hide span{
+		margin: 0;
+		font-size: 3.5rem;
+		color: red;
+		text-align: center;
 	}
 </style>
 <body>
@@ -214,6 +222,7 @@
 			<div id="hide" class="inputs">
 				<label for="result">Result</label>
 				<input type="number" id="result" value="0" disabled>
+				<span id="msg">Ocorreu um error</label>
 			</div>
 		</div>
 
@@ -241,6 +250,8 @@
 			buttonRef.disabled = true
 			buttonRef.innerText = "Calculating..."
 			document.getElementById("hide").style.visibility = "hidden"
+			document.getElementById("msg").style.visibility = "hidden"
+			document.getElementById("result").style.visibility = "hidden"
 			console.log("teste")
 			
 			const url = "/cgi/post"
@@ -251,13 +262,25 @@
 			const method = "POST"
 			console.log(body)
 			
+			console.log("document.getElementById(result).value:", document.getElementById("result").value)
 			const respose = await fetch(url, {headers, body, method})
 			const data = await respose.json()
 			console.log(respose)
 			console.log(data)
 			buttonRef.disabled = false
 			buttonRef.innerText = "Calculate new Sum"
-			document.getElementById("result").value = data.result
+			if(data?.Error){
+				console.log("error")
+				document.getElementById("msg").innerText = data.Error
+				document.getElementById("result").style.visibility = "hidden"
+				document.getElementById("msg").style.visibility = "visible"
+			}
+			else{
+				console.log("ok")
+				document.getElementById("msg").style.visibility = "hidden"
+				document.getElementById("result").style.visibility = "visible"
+				document.getElementById("result").value = String(data?.result)
+			}
 			document.getElementById("hide").style.visibility = "visible"
 		};
 	</script>
