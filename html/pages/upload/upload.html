@@ -110,6 +110,7 @@
 		border-radius: 16px;
 		padding: 0.5rem 1rem;
 		font-size: 2rem;
+		background-color: white;
 		color: #0d1821;
 		width: 100%;
 		text-align: center;
@@ -182,6 +183,16 @@
 	.inputs p{
 		margin-top: 1rem;
 	}
+
+	#error, #msg {
+		margin-top: 2rem;
+		font-size: 3rem;
+		visibility: hidden;
+	}
+	
+	#error{
+		color: red;
+	}
 </style>
 
 <body >
@@ -196,12 +207,13 @@
 		
 		<div class="inputContainer result">
 			<div class="inputs">
-				<input type="file" id="result">
+				<input type="file" id="fileInput">
 				<p>
 					<span id="error">Error</label>
+					
 				</p>
 				<p>
-					<span id="lastUpdate">-</label>
+					<span id="msg">File uploaded</label>
 				</p>
 			</div>
 		</div>
@@ -210,7 +222,7 @@
 
 		<div class="buttonContainer">
 			<div class="buttonContainer">
-				<button id="button" onclick="getPrice()">Get Price</button>
+				<button id="button" onclick="uploadFile()">Upload File</button>
 			</div>
 		</div>
 	</div>
@@ -221,52 +233,60 @@
 	</footer>
 
 	<script>
-		async function  getPrice(){
 
+		function hasWhiteSpace(s) {
+		return s.indexOf(' ') >= 0;
+		}
+
+		async function  uploadFile(){
+			document.getElementById("msg").style.visibility = "hidden"
+			file = document.getElementById("fileInput").files[0]
 			buttonRef = document.getElementById("button")
 
-			buttonRef.disabled = true
-			buttonRef.innerText = "Loading..."
-			document.getElementById("lastUpdate").style.visibility = "hidden"
-			document.getElementById("error").style.visibility = "hidden"
-			document.getElementById("result").style.visibility = "hidden"
-			
-			const url = "/cgi/get"
-			const method = "GET"
-			
-			try{
-				const respose = await fetch(url, {method})
-				const data = await respose.json()
+			if(file){
+				if(hasWhiteSpace(file.name)){
+					document.getElementById("error").style.visibility = "visible"
+					document.getElementById("error").innerText = "Invalid file name"
+					return
+				}
+				buttonRef.disabled = true
+				buttonRef.innerText = "Uploading..."
+				formData =  new FormData
+				formData.append(file.name, file)
+				console.log("formData:", formData)
+
+				const url = "/pages/upload"
+				const method = "POST"
+	
+				const respose = await fetch(url, {body:formData, method})
+				// const data = await respose.json()
 				console.log(respose)
-				console.log(data)
-				document.getElementById("error").style.visibility = "hidden"
-				document.getElementById("result").style.visibility = "visible"
-				document.getElementById("result").value = String(data?.result)
-			
-			}
-			catch {
-				console.log("error")
-				document.getElementById("error").innerText = "Error"
-				document.getElementById("result").style.visibility = "hidden"
-				document.getElementById("error").style.visibility = "visible"
-				currentTime = Date.now()
-				document.getElementById("lastUpdate").style.visibility = "visible"
-				console.log("currentTime:", currentTime)
-				document.getElementById("lastUpdate").innerText = new Date(currentTime).toString()
+				// console.log(data)
+
+				if(respose.status == 201){
+					document.getElementById("msg").style.visibility = "visible"
+					document.getElementById("msg").innerText = `File: ${file.name} was uploaded.`
+					document.getElementById("fileInput").value = ""
+				}
+				
 				buttonRef.disabled = false
-				buttonRef.innerText = "Get New Price"
+				buttonRef.innerText = "Upload New File"
 			}
-			// if(data?.Error){
-			// }
-			// else{
-			// 	console.log("ok")
-			// }
-			currentTime = Date.now()
-			document.getElementById("lastUpdate").style.visibility = "visible"
-			console.log("currentTime:", currentTime)
-			document.getElementById("lastUpdate").innerText = new Date(currentTime).toString()
-			buttonRef.disabled = false
-			buttonRef.innerText = "Get New Price"
+			else {
+				document.getElementById("error").style.visibility = "visible"
+				document.getElementById("error").innerText = "Select a File"
+			}
+
+
+			// console.log(file)
+			
+			
+			// 	document.getElementById("error").style.visibility = "hidden"
+			// 	document.getElementById("result").style.visibility = "visible"
+			// 	document.getElementById("result").value = String(data?.result)
+
+			
+			
 		};
 	</script>
 </body>
