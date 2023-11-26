@@ -1,5 +1,5 @@
 #ifndef RESPONSE_HPP
-# define RESPONSE_HPP
+#define RESPONSE_HPP
 
 #include <iostream>
 #include <sstream>
@@ -13,27 +13,28 @@
 #define CRLF "\r\n"
 #define SP " "
 
-
 class Response {
 	private:
-	std::string	httpVersion;
-	std::string	body;
-	std::map<std::string, std::string>	header;
+		std::string							body;
+		std::string							httpVersion;
+		std::map<std::string, std::string>	header;
 
-	void	renderErrorPage();
+		void renderErrorPage();
 
 	public:
+		int	statusCode;
+
 		Response();
 		~Response();
-		int			statusCode;
-		void		setStatusCode(int newStatusCode, Config &config);
+
 		int			getStatusCode();
-		std::string	getReasonPhrase();
-		std::string	getMessage();
 		void		setBody(std::string content);
 		void		setHeader(std::string key, std::string value);
+		void		setStatusCode(int newStatusCode, Config &config);
 		void		setContentType(const std::string &fileExtenstion);
 		void		renderDirectory(std::string root, std::string path);
+		std::string	getMessage();
+		std::string	getReasonPhrase();
 };
 
 #endif

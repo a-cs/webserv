@@ -11,12 +11,13 @@ Cgi::~Cgi() {
 }
 
 std::string Cgi::exec() {
-    if (access(this->fullPath.c_str(), R_OK) != 0)
+	if (access(this->fullPath.c_str(), R_OK) != 0)
 		return "Error";
-	
+
 	std::signal(SIGCHLD, SIG_IGN);
 	int pid = fork();
-	if (pid == 0) {
+	if (pid == 0)
+	{
 		prepareCGI();
 		executeCgi();
 		return "";
@@ -24,13 +25,16 @@ std::string Cgi::exec() {
 
 	int attempt = 0;
 	int status;
-	while (attempt < 3) {
+	while (attempt < 3)
+	{
 		waitpid(pid, &status, WNOHANG);
 
-		if (status & WNOHANG) {
+		if (status & WNOHANG)
+		{
 			attempt++;
 			sleep(1);
-		} else
+		}
+		else
 			attempt = 3;
 	}
 
@@ -45,27 +49,22 @@ std::string Cgi::exec() {
 void Cgi::prepareCGI() {
 	std::vector<std::string> temp;
 
-	// create temp fd
 	this->tempFd = open("tempFile", O_CREAT | O_RDWR | O_TRUNC, 0644);
 
-	// create args
 	temp.push_back("python3");
 	temp.push_back(fullPath);
 	temp.push_back(request->body);
 	this->args = createArrayOfStrings(temp);
 
-	// create envp
 	temp.clear();
 	temp.push_back("REQUEST_BODY=" + request->body);
 	this->envp = createArrayOfStrings(temp);
 }
 
-char **Cgi::createArrayOfStrings(std::vector<std::string> const &vector) const
-{
+char **Cgi::createArrayOfStrings(std::vector<std::string> const &vector) const {
 	char **array = new char *[vector.size() + 1];
 
-	for (std::size_t i = 0; i < vector.size(); ++i)
-	{
+	for (std::size_t i = 0; i < vector.size(); ++i) {
 		array[i] = new char[vector[i].size() + 1];
 		std::strcpy(array[i], vector[i].c_str());
 	}
@@ -74,16 +73,13 @@ char **Cgi::createArrayOfStrings(std::vector<std::string> const &vector) const
 	return array;
 }
 
-void Cgi::destroyArrayOfStrings(char **array) const
-{
+void Cgi::destroyArrayOfStrings(char **array) const {
 	for (char **p = array; *p; ++p)
-	{
-		delete[] * p;
-	}
+		delete[] *p;
 	delete[] array;
 }
 
-void	Cgi::executeCgi() {
+void Cgi::executeCgi() {
 	if (dup2(this->tempFd, STDOUT_FILENO) == -1)
 		throw std::runtime_error("dup2");
 	if (execve("/usr/bin/python3", this->args, this->envp) == -1)

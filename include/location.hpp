@@ -5,20 +5,18 @@
 #include <vector>
 
 class Location {
-    private:
+	public:
+		bool						isDirectoryEnable;
+		std::string					cgi;
+		std::string					path;
+		std::string					cgiPass;
+		std::string					redirect;
+		std::string					uploadPath;
+		std::vector<std::string>	indexList;
+		std::vector<std::string>	allowedMethods;
 
-    public:
-        Location();
-        ~Location();
-
-        std::string path;
-        std::vector<std::string> allowedMethods;
-        std::vector<std::string> indexList;
-        std::string cgi;
-        std::string cgiPass;
-        bool isDirectoryEnable;
-        std::string redirect;
-        std::string uploadPath;
+		Location();
+		~Location();
 };
 
 #endif

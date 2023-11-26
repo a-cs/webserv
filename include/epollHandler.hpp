@@ -1,5 +1,5 @@
 #ifndef EPOLL_HANDLER_HPP
-# define EPOLL_HANDLER_HPP
+#define EPOLL_HANDLER_HPP
 
 #include <cstdlib>
 #include <iostream>
@@ -15,15 +15,12 @@
 #define MAX_EVENTS 1000
 
 class EpollHandler {
-	private:
-
 	public:
-        int epollFd;
-		struct epoll_event *events;
+		int					epollFd;
+		struct epoll_event	*events;
 
 		EpollHandler();
 		~EpollHandler();
-		EpollHandler(EpollHandler const &obj);
 		EpollHandler &operator=(EpollHandler const &obj);
 };
 

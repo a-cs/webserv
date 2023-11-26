@@ -1,12 +1,12 @@
 #include "../include/error.hpp"
 
 Error::Error() {
-    this->onError = false;
+	this->onError = false;
 }
 
 Error::~Error() {}
 
 void Error::clear() {
-    this->msg.clear();
-    this->onError = false;
+	this->msg.clear();
+	this->onError = false;
 }
