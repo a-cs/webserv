@@ -22,7 +22,6 @@ bool isRunning(bool status) {
 
 void stop(int sig) {
 	if (sig == SIGINT || sig == SIGQUIT) {
-		std::cerr << "parou\n";
 		isRunning(false);
 	}
 }
@@ -32,7 +31,6 @@ bool setNonBlocking(int fd) {
 	if (flags == -1)
 		return false;
 	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
-		std::cerr << "nonBlocking";
 		return false;
 	}
 	return true;
@@ -46,7 +44,6 @@ int start(EpollHandler *epollHandler) {
 		int numEvents = epoll_wait(epollHandler->epollFd, epollHandler->events, MAX_EVENTS, 0);
 
 		if (numEvents == -1) {
-			std::cerr << "epoll_wait";
 			return EXIT_FAILURE;
 		}
 
@@ -59,9 +56,7 @@ int start(EpollHandler *epollHandler) {
 				socklen_t clientAddrLen = sizeof(clientAddr);
 				int clientSocket = accept(server->getSock(), (struct sockaddr *)&clientAddr, &clientAddrLen);
 
-				if (clientSocket == -1)
-					std::cerr << "\n Error accept";
-				else {
+				if (clientSocket != -1){
 					setNonBlocking(clientSocket);
 					connection_t *newConnection = new connection_t;
 					Request req;
@@ -108,7 +103,11 @@ int start(EpollHandler *epollHandler) {
 				Response res;
 				server->handleRequest(&connection->req, &res);
 				std::string message = res.getMessage();
-				write(connection->fd, message.c_str(), message.size());
+				ssize_t bytesSend = write(connection->fd, message.c_str(), message.size());
+				if (bytesSend <= 0){
+					server->config.error.msg = "Error";
+					server->config.error.onError = true;
+				}
 				epoll_ctl(epollHandler->epollFd, EPOLL_CTL_DEL, connection->fd, 0);
 				close(connection->fd);
 				delete connection;

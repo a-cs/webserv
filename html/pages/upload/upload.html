@@ -239,6 +239,7 @@
 		}
 
 		async function  uploadFile(){
+			document.getElementById("error").style.visibility = "hidden"
 			document.getElementById("msg").style.visibility = "hidden"
 			file = document.getElementById("fileInput").files[0]
 			buttonRef = document.getElementById("button")
@@ -258,14 +259,19 @@
 				const url = "/pages/upload"
 				const method = "POST"
 	
-				const respose = await fetch(url, {body:formData, method})
-				// const data = await respose.json()
-				console.log(respose)
+				const response = await fetch(url, {body:formData, method})
+				// const data = await response.json()
+				console.log(response)
 				// console.log(data)
 
-				if(respose.status == 201){
+				if(response.status == 201){
 					document.getElementById("msg").style.visibility = "visible"
 					document.getElementById("msg").innerText = `File: ${file.name} was uploaded.`
+					document.getElementById("fileInput").value = ""
+				}
+				else {
+					document.getElementById("error").style.visibility = "visible"
+					document.getElementById("error").innerText = response.statusText
 					document.getElementById("fileInput").value = ""
 				}
 				

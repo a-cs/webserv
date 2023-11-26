@@ -25,7 +25,7 @@ INC := ./include
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CC) $(FLAGS) -I $(INC) -c $< -o $@
 
-all: hosts $(NAME)
+all: $(NAME)
 
 $(NAME): $(OBJS)
 	$(CC) $(FLAGS) $(OBJS) -o $@
@@ -35,20 +35,11 @@ $(OBJS): | $(OBJ_DIR)
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
 
-hosts:
-	@if [ ! -e /etc/hosts ]; then \
-		sudo touch /etc/hosts; \
-	fi
-	sudo cp /etc/hosts ./hosts_backup
-
 clean:
 	rm -rf $(OBJ_DIR)
 
 fclean: clean
 	rm -f $(NAME)
-	sudo rm -rf /etc/hosts
-	sudo cp ./hosts_backup /etc/hosts
-	rm -rf ./hosts_backup
 
 re: fclean all
 

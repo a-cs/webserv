@@ -23,7 +23,6 @@ bool Request::validateMethod(std::string method) {
 		if (config.locationList[i].path == uri) {
 			if (std::find(config.locationList[i].allowedMethods.begin(), config.locationList[i].allowedMethods.end(), method) == config.locationList[i].allowedMethods.end()) {
 				errorCode = 405;
-				std::cerr << "Method Not Allowed\n";
 				return false;
 			}
 			break;
@@ -47,7 +46,6 @@ void Request::parseRequestLine(std::string requestLine) {
 
 		if (httpVersion.compare("HTTP/1.1") != 0) {
 			errorCode = 505;
-			std::cerr << "invalid HTTP protocol version\n";
 			return;
 		}
 	}
@@ -69,7 +67,6 @@ void Request::parseHeaders(std::string headersContent)
 		pos = line.find(":");
 		if (pos == std::string::npos) {
 			errorCode = 400;
-			std::cerr << "bad request, invalid Header on line=\n" << line << "\n";
 			break;
 		}
 		std::string key = line.substr(0, pos);
@@ -78,12 +75,10 @@ void Request::parseHeaders(std::string headersContent)
 		value = utils::trim(value);
 		if (value.empty()) {
 			errorCode = 400;
-			std::cerr << "bad request, invalid Header value on line=\n" << line << "\n";
 			break;
 		}
 		if (key == "content-length" && !utils::isNumber(value)) {
 			errorCode = 400;
-			std::cerr << "bad request, invalid Content-Length value on line=\n" << line << "\n";
 			break;
 		}
 		if (key == "content-length") {
@@ -129,7 +124,6 @@ void Request::parseBody() {
 	if (contentLength > 0) {
 		if (data.size() > config.bodySizeLimit) {
 			errorCode = 413;
-			std::cerr << "Payload too large\n";
 			return;
 		}
 		if (data.size() < contentLength)
